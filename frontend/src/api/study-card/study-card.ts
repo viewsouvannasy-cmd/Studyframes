@@ -37,5 +37,6 @@ export const useGetStudyCardLesson = (sci_id: number) => {
     queryKey: ["study_card_lesson"],
     queryFn: () => getStudyCardLesson(false, { sci_id }),
     enabled: !!sci_id,
+    gcTime: 0,
   });
 };
