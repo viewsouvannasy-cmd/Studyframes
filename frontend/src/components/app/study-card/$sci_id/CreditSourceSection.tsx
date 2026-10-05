@@ -1,6 +1,10 @@
+// library
+import { useState } from "react";
+
 // component
 import { IconExclamationMark } from "../../../icon/icon-static/IconExlamationMark";
 import { IconCopy } from "../../../icon/icon-static/IconCopy";
+import { IconTick } from "../../../icon/icon-static/IconTick";
 
 // api
 import { useGetStudyCardLesson } from "../../../../api/study-card/study-card";
@@ -11,6 +15,20 @@ interface CreditSourceSectionProps {
 
 export function CreditSourceSection({ sci_id }: CreditSourceSectionProps) {
   const { data } = useGetStudyCardLesson(Number(sci_id));
+
+  const [isCopy, setIsCopy] = useState(false);
+
+  const handleCopyCredit = async () => {
+    setIsCopy(true);
+    await navigator.clipboard.writeText(`
+   ${data?.[0].title}${data?.[0].instructor ? data?.[0].instructor : ""}${data?.[0].credit_source}
+    ${data?.[0].video_url}${data?.[0].license}Added 0 quiz questions and progress tracking by Studyframes. The video
+    itself is unchanged
+      `);
+    setTimeout(() => {
+      setIsCopy(false);
+    }, 2000);
+  };
 
   return (
     <div className="rounded-2xl border border-(--color-border-strong) px-3 pb-3">
@@ -85,8 +103,11 @@ export function CreditSourceSection({ sci_id }: CreditSourceSectionProps) {
           Ratings and take counts come from Studyframes learners, <br /> not
           from the original channel.
         </span>
-        <button className="text-small flex cursor-pointer items-center gap-2 rounded-lg border border-(--color-border-strong) px-3 py-1.5 transition-colors duration-200 hover:bg-(--color-surface-muted)">
-          <IconCopy size={18} />
+        <button
+          onClick={() => handleCopyCredit()}
+          className="text-small flex cursor-pointer items-center gap-2 rounded-lg border border-(--color-border-strong) px-3 py-1.5 transition-colors duration-200 hover:bg-(--color-surface-muted)"
+        >
+          {isCopy ? <IconTick size={19} /> : <IconCopy size={18} />}
           Copy credit text
         </button>
       </div>

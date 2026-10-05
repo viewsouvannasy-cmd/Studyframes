@@ -56,11 +56,11 @@ export function StudyCardItem({ item }: StudyCardItemProps) {
             {item.sci_name}
           </p>
 
-          <div className="sml:flex-row flex flex-col gap-1.5">
+          <div className="flex gap-1.5">
             <div className="flex items-center gap-1 [&>svg]:hidden min-[430px]:[&>svg]:flex">
               <p className="text-caption">{item.total_chapters} Chapters</p>
             </div>
-            <p className="sml:flex hidden">&middot;</p>
+            <p>&middot;</p>
             <div className="flex items-center gap-1 [&>svg]:hidden min-[430px]:[&>svg]:flex">
               <p className="text-caption">
                 {formatDuration(item.total_length_seconds)}
