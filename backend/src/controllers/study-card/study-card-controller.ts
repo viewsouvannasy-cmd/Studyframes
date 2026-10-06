@@ -10,6 +10,8 @@ import {
   writeUserChapter,
   readUserStudyCard,
   readStudyCardLesson,
+  writePublicQuizs,
+  writeUserGeneratedQuizs,
 } from "./sc-query.js";
 
 // helper function
@@ -20,12 +22,16 @@ import {
   getTranscript,
   getVideoChapter,
 } from "../../utils/hanlderYouTubeVideo.js";
+import { getJson } from "../../utils/getJson.js";
 
 // constants
-import { ANALYSIS_YOUTUBE_VIDEO } from "../../constants/system-prompt.js";
+import {
+  ANALYSIS_YOUTUBE_VIDEO,
+  CREATE_QUIZS,
+} from "../../constants/system-prompt.js";
 
 // type
-import type { StudyCardLesson } from "../../types/Data.js";
+import type { StudyCardLesson, Quizs } from "../../types/Data.js";
 
 const createStudyCard = async (
   req: Request<
@@ -224,4 +230,100 @@ const getStudyCardLesson = async (
   }
 };
 
-export { createStudyCard, getListStudyCard, getStudyCardLesson };
+const createQuizs = async (
+  req: Request<{ sci_id: number; chapter_id: number }, {}, { user_id: number }>,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { user_id } = req.body;
+    const { sci_id, chapter_id } = req.params;
+
+    if (!sci_id || !chapter_id) {
+      return res
+        .status(400)
+        .json({ ok: false, msg: "Please provide all requried" });
+    }
+
+    // check chapter already have been generate quizs
+    const isAlreadyHaveQuizs = await sql`
+    SELECT 
+      pq.pq_id
+    FROM study_card_items as sci
+    INNER JOIN chapters as c
+    ON sci.sci_id = c.sci_id
+    INNER JOIN public_chapters as pc 
+    on c.pc_id = pc.pc_id
+    INNER JOIN public_quizs as pq 
+    on pc.pc_id = pq.pc_id
+    WHERE sci.user_id = ${user_id}
+    AND sci.sci_id = ${sci_id}
+    AND c.chapter_id = ${chapter_id}
+    LIMIT 1
+    `;
+    if (isAlreadyHaveQuizs.length !== 0) {
+      // check user still not generate the quizs
+      const [isUserGenerated] = (await sql`
+      SELECT 
+        is_generated 
+      FROM chapters 
+      WHERE chapter_id = ${chapter_id} 
+      `) as { is_generated: boolean }[];
+      if (!isUserGenerated.is_generated) {
+        await writeUserGeneratedQuizs(chapter_id);
+      }
+      return res
+        .status(400)
+        .json({ ok: false, msg: "the chapter is already have quizs" });
+    }
+
+    const [findChapterTranscrpt] = (await sql`
+    SELECT 
+      pc.pc_id,
+      pc.transcript
+    FROM study_card_items as sci
+    INNER JOIN chapters as c
+    ON sci.sci_id = c.sci_id
+    INNER JOIN public_chapters as pc 
+    on c.pc_id = pc.pc_id
+    WHERE sci.user_id = ${user_id}
+    AND sci.sci_id = ${sci_id}
+    AND c.chapter_id = ${chapter_id}
+    LIMIT 1
+    `) as { pc_id: number; transcript: string; pq_id: number }[];
+
+    // send transcript to ai generate quizs
+    const aiResponse = await fetch(
+      "https://openrouter.ai/api/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${getEnv("OPENROUTER_API_KEY")}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "dots-studio/dots-3-note-preview:free",
+          messages: [
+            {
+              role: "user",
+              content: `${CREATE_QUIZS}\n\n Transcript:\n${findChapterTranscrpt.transcript}`,
+            },
+          ],
+        }),
+      },
+    );
+
+    const resultResponse = await aiResponse.json();
+
+    // change text to exact JSON and parse it
+    const quizs: Quizs[] = getJson(resultResponse);
+
+    await writePublicQuizs(findChapterTranscrpt.pc_id, quizs, chapter_id);
+
+    res.status(200).json({ ok: true, msg: "create quiz success" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { createStudyCard, getListStudyCard, getStudyCardLesson, createQuizs };

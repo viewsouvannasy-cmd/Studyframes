@@ -14,7 +14,7 @@ const createStudyCardWithYouTube = async (
     color,
     video_url,
   }: { card_name: string; color: string; video_url: string },
-): Promise<{ ok: boolean; results?: string }> => {
+): Promise<{ ok: boolean; msg: string }> => {
   try {
     const accessToken = getAccessToken();
     const response = await axios.post(
@@ -45,6 +45,7 @@ const createStudyCardWithYouTube = async (
 const getListStudyCard = async (isRetry = false): Promise<StudyCard[]> => {
   try {
     const accessToken = getAccessToken();
+
     const response = await axios.get(
       `${getEnv("VITE_SERVER_HOST")}/api/study-card/get-list`,
       { headers: { Authorization: `Bearer ${accessToken}` } },
@@ -77,4 +78,37 @@ const getStudyCardLesson = async (
   }
 };
 
-export { createStudyCardWithYouTube, getListStudyCard, getStudyCardLesson };
+const createQuizs = async (
+  isRetry = false,
+  { sci_id, chapter_id }: { sci_id: number; chapter_id: number },
+): Promise<{ ok: boolean; msg: string }> => {
+  try {
+    const accessToken = getAccessToken();
+    const response = await axios.post(
+      `${getEnv("VITE_SERVER_HOST")}/api/study-card/create/quizs/${sci_id}/${chapter_id}`,
+      {},
+      { headers: { Authorization: `Bearer ${accessToken}` } },
+    );
+
+    return response.data;
+  } catch (error) {
+    if (
+      axios.isAxiosError<ResponseStatus>(error) &&
+      error.response &&
+      error.response.status !== 401
+    ) {
+      throw error;
+    }
+
+    return await handleAccessTokenError(error, isRetry, () =>
+      createQuizs(true, { sci_id, chapter_id }),
+    );
+  }
+};
+
+export {
+  createStudyCardWithYouTube,
+  getListStudyCard,
+  getStudyCardLesson,
+  createQuizs,
+};
