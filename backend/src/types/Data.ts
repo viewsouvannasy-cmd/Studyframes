@@ -38,4 +38,15 @@ export interface StudyCardLesson {
   pc_title: string;
   start_time: number;
   pc_number: number;
+  total_quizs: number | null;
+}
+
+export interface Quizs {
+  question: string | "No Quiz";
+  choice: {
+    A: string | "No Quiz";
+    B: string | "No Quiz";
+    C: string | "No Quiz";
+  };
+  correct_answer: "A" | "B" | "C" | "No Quiz";
 }

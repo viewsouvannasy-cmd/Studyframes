@@ -38,4 +38,5 @@ export interface StudyCardLesson {
   pc_title: string;
   start_time: number;
   pc_number: number;
+  total_quizs: number | null;
 }

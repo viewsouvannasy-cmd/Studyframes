@@ -30,6 +30,11 @@ export function CreditSourceSection({ sci_id }: CreditSourceSectionProps) {
     }, 2000);
   };
 
+  const totalQuizsInCard = data?.reduce((acc, item) => {
+    const number = !item.total_quizs ? 0 : item.total_quizs;
+    return acc + number;
+  }, 0);
+
   return (
     <div className="rounded-2xl border border-(--color-border-strong) px-3 pb-3">
       <div className="border-b border-(--color-border-strong) py-3">
@@ -93,8 +98,8 @@ export function CreditSourceSection({ sci_id }: CreditSourceSectionProps) {
           Change made
         </p>
         <span className="text-small flex-1">
-          Added 0 quiz questions and progress tracking by Studyframes. The video
-          itself is unchanged.
+          Added {totalQuizsInCard} quiz questions and progress tracking by
+          Studyframes. The video itself is unchanged.
         </span>
       </div>
 

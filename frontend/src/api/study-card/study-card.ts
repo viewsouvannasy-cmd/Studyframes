@@ -6,6 +6,7 @@ import {
   createStudyCardWithYouTube,
   getListStudyCard,
   getStudyCardLesson,
+  createQuizs,
 } from "./study-card-func";
 
 // tyep
@@ -14,7 +15,7 @@ import type { AxiosError } from "axios";
 
 export const useCreateStudyCard = () => {
   return useMutation<
-    { ok: boolean; results?: string },
+    { ok: boolean; msg: string },
     AxiosError<ResponseStatus>,
     { card_name: string; color: string; video_url: string }
   >({
@@ -38,5 +39,18 @@ export const useGetStudyCardLesson = (sci_id: number) => {
     queryFn: () => getStudyCardLesson(false, { sci_id }),
     enabled: !!sci_id,
     gcTime: 0,
+  });
+};
+
+export const useCreateQuizs = () => {
+  return useMutation<
+    { ok: boolean; msg: string },
+    AxiosError<ResponseStatus>,
+    { sci_id: number; chapter_id: number }
+  >({
+    mutationFn: (variable) => createQuizs(false, variable),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["study_card_lesson"] });
+    },
   });
 };
