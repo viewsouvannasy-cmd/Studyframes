@@ -1,8 +1,8 @@
 // api
-import { useGetStudyCardLesson } from "../../../../api/study-card/study-card";
+import { useGetStudyCardLesson } from "../../../../../api/study-card/study-card";
 
 // helper function
-import { formatDuration } from "../../../../utils/calculate";
+import { formatDuration } from "../../../../../utils/calculate";
 
 interface HeroSectionProp {
   sci_id: string;

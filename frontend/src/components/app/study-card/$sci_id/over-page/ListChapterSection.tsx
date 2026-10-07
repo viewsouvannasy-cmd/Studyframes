@@ -1,11 +1,11 @@
 // component
-import { IconListDetail } from "../../../icon/icon-static/IconListDetail";
+import { IconListDetail } from "../../../../icon/icon-static/IconListDetail";
 
 // main component
 import { ItemChapter } from "./ItemChapter";
 
 // api
-import { useGetStudyCardLesson } from "../../../../api/study-card/study-card";
+import { useGetStudyCardLesson } from "../../../../../api/study-card/study-card";
 
 interface ListChapterSectionProps {
   sci_id: string;

@@ -2,12 +2,12 @@
 import { useState } from "react";
 
 // component
-import { IconExclamationMark } from "../../../icon/icon-static/IconExlamationMark";
-import { IconCopy } from "../../../icon/icon-static/IconCopy";
-import { IconTick } from "../../../icon/icon-static/IconTick";
+import { IconExclamationMark } from "../../../../icon/icon-static/IconExlamationMark";
+import { IconCopy } from "../../../../icon/icon-static/IconCopy";
+import { IconTick } from "../../../../icon/icon-static/IconTick";
 
 // api
-import { useGetStudyCardLesson } from "../../../../api/study-card/study-card";
+import { useGetStudyCardLesson } from "../../../../../api/study-card/study-card";
 
 interface CreditSourceSectionProps {
   sci_id: string;
@@ -81,17 +81,21 @@ export function CreditSourceSection({ sci_id }: CreditSourceSectionProps) {
         <p className="text-small w-[30%] text-(--color-text-secondary)">
           License
         </p>
-        <a
-          className="text-small flex-1 text-(--color-primary-text) underline"
-          target="_blank"
-          href={
-            data?.[0].license?.includes("YouTube")
-              ? ""
-              : "https://ocw.mit.edu/terms"
-          }
-        >
-          {!data?.[0].license ? "Standard YouTube License" : data[0].license}
-        </a>
+        {data?.[0].license?.includes("YouTube") ? (
+          <span className="text-small">{data?.[0].license}</span>
+        ) : (
+          <a
+            className="text-small flex-1 text-(--color-primary-text) underline"
+            target="_blank"
+            href={
+              data?.[0].license?.includes("YouTube")
+                ? ""
+                : "https://ocw.mit.edu/terms"
+            }
+          >
+            {data?.[0].license}
+          </a>
+        )}
       </div>
       <div className="flex items-start border-b border-(--color-border-strong) py-2.5">
         <p className="text-small w-[30%] text-(--color-text-secondary)">
