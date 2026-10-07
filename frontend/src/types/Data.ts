@@ -23,6 +23,7 @@ export interface StudyCard {
 
 export interface StudyCardLesson {
   sci_id: number;
+  psci_id: string;
   credit_source: string;
   title: string;
   total_chapters: number;

@@ -1,15 +1,18 @@
+// library
+import { useNavigate } from "@tanstack/react-router";
+
 // component
-import { IconPlus } from "../../../icon/icon-static/IconPlus";
-import { SipnnerLoad } from "../../../loading-state/SipnnerLoad";
+import { IconPlus } from "../../../../icon/icon-static/IconPlus";
+import { SipnnerLoad } from "../../../../loading-state/SipnnerLoad";
 
 // helper function
-import { formatDuration } from "../../../../utils/calculate";
+import { formatDuration } from "../../../../../utils/calculate";
 
 // api
-import { useCreateQuizs } from "../../../../api/study-card/study-card";
+import { useCreateQuizs } from "../../../../../api/study-card/study-card";
 
 // type
-import type { StudyCardLesson } from "../../../../types/Data";
+import type { StudyCardLesson } from "../../../../../types/Data";
 
 interface ItemChapter {
   sci_id: string;
@@ -18,6 +21,8 @@ interface ItemChapter {
 }
 
 export function ItemChapter({ sci_id, chapter, length }: ItemChapter) {
+  const navigate = useNavigate();
+
   const { mutate, isPending } = useCreateQuizs();
 
   const handleCreateQuizs = (chapter_id: number) => {
@@ -27,11 +32,16 @@ export function ItemChapter({ sci_id, chapter, length }: ItemChapter) {
     });
   };
 
-  console.log(chapter);
-
   return (
     <div
-      key={chapter.chapter_id}
+      role="button"
+      onClick={() => {
+        const section = `chapter-${chapter.pc_number}`;
+        navigate({
+          to: "/app/study-card/$sci_id/$section",
+          params: { sci_id, section },
+        });
+      }}
       className={`flex cursor-pointer items-center justify-between hover:bg-(--color-primary-soft) has-[button:hover]:bg-transparent ${chapter.pc_number === length ? "" : "border-b border-(--color-border-strong)"} `}
     >
       <div className="flex flex-1 items-center gap-5 px-3 py-2">

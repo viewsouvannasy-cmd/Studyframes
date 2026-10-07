@@ -117,6 +117,7 @@ export const readStudyCardLesson = async (sci_id: string, user_id: string) => {
   return (await sql`
     SELECT
       sci.sci_id,
+      psci.psci_id,
       psci.credit_source,
       psci.title,
       psci.total_chapters,
