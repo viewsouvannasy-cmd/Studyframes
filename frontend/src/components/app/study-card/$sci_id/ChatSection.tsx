@@ -1,5 +1,5 @@
 // library
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 
 // component
 import { IconArrow } from "../../../icon/icon-static/IconArrow";
@@ -8,81 +8,53 @@ import { IconSideBar } from "../../../icon/icon-static/IconSideBar";
 // context
 import { useOpenChatSection } from "../../../../context/useOpenChatSection";
 
+// api
+import { useGetChatChapter } from "../../../../api/study-card/chat-chapter/chat-chapter";
+import { useGetStudyCardLesson } from "../../../../api/study-card/study-card";
+
+// type
+import type { ChatMessage } from "../../../../types/Data";
+
 interface ChatSectionProps {
   sci_id: string;
   section: string;
 }
 
-export function ChatSection({ section }: ChatSectionProps) {
+export function ChatSection({ sci_id, section }: ChatSectionProps) {
   const [inputMessage, setInputMessage] = useState<string>("");
 
   const containerChatRef = useRef<HTMLDivElement>(null);
 
-  const [testChat, setTestChat] = useState<{ role: string; content: string }[]>(
-    [
-      { role: "user", content: "hello" },
-      { role: "ai", content: "Hello! What can I help you with today?" },
-      { role: "user", content: "i want you to research something" },
-      {
-        role: "ai",
-        content:
-          "Sure! I can search the web and gather information for you. Just tell me the topic.",
-      },
-      {
-        role: "user",
-        content:
-          "i wanna find information about new technology that is growing now",
-      },
-      {
-        role: "ai",
-        content:
-          "Great topic. Do you want a general overview, or a specific field like AI, energy, or healthcare?",
-      },
-      { role: "user", content: "AI" },
-      {
-        role: "ai",
-        content:
-          "Here are some fast-growing areas in AI:\n\n1. Generative AI (text, image, video)\n2. AI agents that complete tasks automatically\n3. On-device AI for phones and laptops\n4. AI in drug discovery and healthcare\n5. Robotics powered by AI models",
-      },
-      { role: "user", content: "tell me more about number 2" },
-      {
-        role: "ai",
-        content:
-          "AI agents are systems that can plan, use tools (like browsers or code), and carry out multi-step tasks with little human input. They're being used for customer support, coding assistance, research, and workflow automation. The main challenges are reliability, cost, and safety, since agents can make mistakes when acting on their own.",
-      },
-      { role: "user", content: "ok thanks 👍" },
-      {
-        role: "ai",
-        content: "You're welcome! Want me to research another topic?",
-      },
-      {
-        role: "user",
-        content:
-          "<b>test</b> & special chars: \"quotes\" 'apostrophes' {braces}",
-      },
-      {
-        role: "ai",
-        content: "Got it. Special characters are displayed correctly.",
-      },
-    ],
-  );
-
   const { isChatOpen, toggleOpenChat } = useOpenChatSection();
 
-  function handleSendMessage() {
-    if (inputMessage.length === 0) {
-      return;
-    }
-    setTestChat((pre) => [...pre, { role: "user", content: inputMessage }]);
-    setInputMessage("");
-  }
+  const { data: lessonData } = useGetStudyCardLesson(Number(sci_id));
+
+  const currentChapter = lessonData?.find(
+    (item) => item.pc_number === Number(section.split("-")[1]),
+  );
+
+  const { data: chatData } = useGetChatChapter(currentChapter?.chapter_id);
+  const [newMessage, setNewMessage] = useState<ChatMessage[]>([]);
+
+  const chatMessage = useMemo(
+    () => [...(chatData ?? []), ...newMessage],
+    [newMessage, chatData],
+  ) as ChatMessage[];
 
   useEffect(() => {
     const el = containerChatRef.current;
     if (el) {
       el.scrollTop = el.scrollHeight;
     }
-  }, [testChat]);
+  }, [chatMessage.length]);
+
+  const handleSendMessage = () => {
+    setNewMessage([
+      { role: "user", content: inputMessage, create_at: new Date() },
+    ]);
+  };
+
+  console.log(chatMessage);
 
   return (
     <div
@@ -96,7 +68,7 @@ export function ChatSection({ section }: ChatSectionProps) {
           <IconSideBar size={19} />
         </button>
         <span
-          className={`${isChatOpen === "open" ? "" : "hidden"} text-caption mr-2 text-(--color-text-secondary)`}
+          className={`${isChatOpen === "open" && section !== "overview" ? "" : "hidden"} text-caption mr-2 text-(--color-text-secondary)`}
         >
           Chat On {section.replace("c", "C")}
         </span>
@@ -107,7 +79,7 @@ export function ChatSection({ section }: ChatSectionProps) {
           ref={containerChatRef}
           className="flex flex-1 flex-col items-start gap-5 overflow-scroll px-4 py-4"
         >
-          {testChat.map((chat, index) => {
+          {chatMessage?.map((chat, index) => {
             return chat.role === "user" ? (
               <div
                 key={index}
@@ -119,7 +91,7 @@ export function ChatSection({ section }: ChatSectionProps) {
               </div>
             ) : (
               <div key={index} className="text-small font-reading max-w-[85%]">
-                {chat.content.trim()}
+                {chat.content?.trim()}
               </div>
             );
           })}
@@ -131,7 +103,7 @@ export function ChatSection({ section }: ChatSectionProps) {
               placeholder="Write a message..."
               className="text-small w-full rounded-full border border-(--color-border-strong) p-2.5 px-4 pr-10 shadow-(--shadow-floating) focus:outline-(--color-focus-ring)"
               onChange={(e) => setInputMessage(e.target.value)}
-              onKeyDown={(e) => e.code === "Enter" && handleSendMessage()}
+
               value={inputMessage}
             />
             <button

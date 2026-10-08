@@ -41,3 +41,9 @@ export interface StudyCardLesson {
   pc_number: number;
   total_quizs: number | null;
 }
+
+export interface ChatMessage {
+  role: "user" | "assistant";
+  content: string;
+  create_at: Date;
+}

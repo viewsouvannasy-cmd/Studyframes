@@ -60,7 +60,10 @@ export function ItemChapter({ sci_id, chapter, length }: ItemChapter) {
       <div className="px-3 py-2">
         {!chapter.is_generated && !isPending && (
           <button
-            onClick={() => handleCreateQuizs(chapter.chapter_id)}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleCreateQuizs(chapter.chapter_id);
+            }}
             className="group text-small flex cursor-pointer items-center gap-1 rounded-full border bg-(--color-background) px-2 py-1 text-(--color-primary) transition-colors duration-200 hover:bg-(--color-primary) hover:text-(--color-text-inverse)"
           >
             <IconPlus
