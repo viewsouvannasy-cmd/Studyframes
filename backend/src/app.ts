@@ -17,6 +17,7 @@ import authRoute from "./routes/auth-route.js";
 import oauthRoute from "./routes/oauth-route.js";
 import userRoute from "./routes/user-route.js";
 import studyCardRoute from "./routes/study-card/study-card-route.js";
+import chatChapterRoute from "./routes/study-card/chat-chapter-route.js";
 
 // helper function
 import { getEnv } from "./utils/getEnv.js";
@@ -40,6 +41,7 @@ app.use("/api/refresh-token", refreshToken);
 
 app.use("/api/user", verifyJwt, userRoute);
 app.use("/api/study-card", verifyJwt, studyCardRoute);
+app.use("/api/chapter", verifyJwt, chatChapterRoute);
 
 app.use(notFoundHandler);
 app.use(errorHandle);

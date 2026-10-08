@@ -51,3 +51,9 @@ export interface Quizs {
   };
   correct_answer: "A" | "B" | "C" | "No Quiz";
 }
+
+export interface ChatMessage {
+  role: "user" | "assistant";
+  content: string;
+  create_at: Date;
+}

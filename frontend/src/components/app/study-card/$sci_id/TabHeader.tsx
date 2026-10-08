@@ -28,6 +28,10 @@ export function TabHeader({ sci_id, section }: TabHeaderProp) {
 
   const { data } = useGetStudyCardLesson(Number(sci_id));
 
+  const current = data?.find(
+    (chapter) => chapter.pc_number === Number(currentChapter.split("-")[1]),
+  );
+
   const filterChapter = data?.filter(
     (chapter) => chapter.pc_number !== Number(section.split("-")[1]),
   );
@@ -98,7 +102,7 @@ export function TabHeader({ sci_id, section }: TabHeaderProp) {
             style={{ borderTopRightRadius: 17, borderBottomRightRadius: 17 }}
             className={`text-small z-10 flex h-full items-center rounded-l-md transition-colors duration-200 ${section === "quizs" ? "bg-(--color-primary-soft) px-3" : "px-1 pr-3 hover:bg-(--color-border)"}`}
           >
-            Quizs
+            {current?.total_quizs} Quizs
           </Link>
 
           <div
