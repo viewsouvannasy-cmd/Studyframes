@@ -22,11 +22,18 @@ export const readChapterChatMessage = async (
   chapter_id: number,
 ): Promise<ChatMessage[]> => {
   return (await sql`
-SELECT 
-    role,
-    content,
-    create_at
-FROM messages 
-WHERE chapter_id = ${chapter_id}
-`) as ChatMessage[];
+  SELECT 
+      role,
+      content,
+      create_at
+  FROM messages 
+  WHERE chapter_id = ${chapter_id}
+  `) as ChatMessage[];
+};
+
+export const deleteChatChapter = async (chapter_id: number) => {
+  await sql`
+  DELETE FROM messages 
+  WHERE chapter_id = ${chapter_id}
+  `;
 };

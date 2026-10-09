@@ -4,7 +4,8 @@ import { useQuery } from "@tanstack/react-query";
 // auth-func
 import { getUser } from "./user-func";
 
-const USER_KEY = ["user"];
+// key
+import { USER_KEY } from "../../constants/queryKey";
 
 export const useUser = () => {
   return useQuery({

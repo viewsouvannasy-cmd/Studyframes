@@ -4,9 +4,11 @@ import { sql } from "../../../config/database.js";
 
 // query
 import { wirteChapterChatMessage, readChapterChatMessage } from "./cc-query.js";
+import { deleteChatChapter } from "./cc-query.js";
 
 // helper function
 import { aiChatBot } from "../../../utils/connectAi.js";
+import { checkChatChapterOwner } from "../../../utils/checkOwner.js";
 
 const createMessage = async (
   req: Request<
@@ -54,9 +56,7 @@ const createMessage = async (
 
     await wirteChapterChatMessage(aiAnswer.role, aiAnswer.content, chapter_id);
 
-    const newChat = await readChapterChatMessage(chapter_id);
-
-    res.status(200).json({ ok: true, results: newChat });
+    res.status(200).json({ ok: true, msg: "send message success" });
   } catch (error) {
     next();
   }
@@ -91,4 +91,32 @@ const getChatMessage = async (
   }
 };
 
-export { createMessage, getChatMessage };
+const clearChatMessage = async (
+  req: Request<{ chapter_id: number }, {}, { user_id: number }>,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { user_id } = req.body;
+    const { chapter_id } = req.params;
+
+    if (!chapter_id) {
+      return res.status(400).json({ ok: false, msg: "Please provide require" });
+    }
+
+    // check user is ownner
+    const isOwnner = await checkChatChapterOwner(chapter_id, user_id);
+    if (!isOwnner) {
+      return res.status(401).json({ ok: false, msg: "Unauthorized" });
+    }
+
+    // clear message in the database
+    await deleteChatChapter(chapter_id);
+
+    res.status(200).json({ ok: true, msg: "delete success" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { createMessage, getChatMessage, clearChatMessage };
