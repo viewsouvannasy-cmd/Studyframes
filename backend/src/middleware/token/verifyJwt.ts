@@ -38,7 +38,7 @@ const verifyJwt = (req: Request, res: Response, next: NextFunction) => {
     next();
   } catch (error) {
     if (error instanceof jwt.TokenExpiredError) {
-      console.log(error.name, error.message);
+      // console.log(error.name, error.message);
       return res.status(401).json({
         ok_verify_token: false,
         msg: "token expired",
@@ -47,7 +47,7 @@ const verifyJwt = (req: Request, res: Response, next: NextFunction) => {
     }
 
     if (error instanceof jwt.JsonWebTokenError) {
-      console.log(error.name, error.message);
+      // console.log(error.name, error.message);
       return res.status(401).json({
         ok_verify_token: false,
         msg: "invalid token",

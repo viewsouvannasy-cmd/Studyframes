@@ -13,6 +13,12 @@ import {
 import type { ResponseStatus } from "../../types/auth-type";
 import type { AxiosError } from "axios";
 
+// key
+import {
+  STUDY_CARD_KEY,
+  STUDY_CARD_LESSON_KEY,
+} from "../../constants/queryKey";
+
 export const useCreateStudyCard = () => {
   return useMutation<
     { ok: boolean; msg: string },
@@ -21,21 +27,21 @@ export const useCreateStudyCard = () => {
   >({
     mutationFn: (variable) => createStudyCardWithYouTube(false, variable),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["study_card"] });
+      queryClient.invalidateQueries({ queryKey: STUDY_CARD_KEY });
     },
   });
 };
 
 export const useGetListStudyCard = () => {
   return useQuery({
-    queryKey: ["study_card"],
+    queryKey: STUDY_CARD_KEY,
     queryFn: () => getListStudyCard(),
   });
 };
 
 export const useGetStudyCardLesson = (sci_id: number) => {
   return useQuery({
-    queryKey: ["study_card_lesson"],
+    queryKey: STUDY_CARD_LESSON_KEY,
     queryFn: () => getStudyCardLesson(false, { sci_id }),
     enabled: !!sci_id,
     gcTime: 0,
@@ -50,7 +56,7 @@ export const useCreateQuizs = () => {
   >({
     mutationFn: (variable) => createQuizs(false, variable),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["study_card_lesson"] });
+      queryClient.invalidateQueries({ queryKey: STUDY_CARD_LESSON_KEY });
     },
   });
 };
