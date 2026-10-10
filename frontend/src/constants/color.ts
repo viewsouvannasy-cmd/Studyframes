@@ -5,4 +5,6 @@ export const STUDY_CARD_COLOR_PATTERNS = {
   amber: { bg: "#FBE8C6", stroke: "#9A5B12", blur: "#FFD78F" },
   rose: { bg: "#FADCE1", stroke: "#A63A54", blur: "#FF8FA1" },
   teal: { bg: "#D3F1EE", stroke: "#146B63", blur: "#8FFFF4" },
-};
+} as const;
+
+export type StudyCardColorKey = keyof typeof STUDY_CARD_COLOR_PATTERNS;

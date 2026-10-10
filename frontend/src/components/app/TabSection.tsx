@@ -1,14 +1,11 @@
 import { Link } from "@tanstack/react-router";
 
 // components
-import { IconGrid } from "../icon/icon-static/IconGrid";
-import { IconLine } from "../icon/icon-static/IconLine";
 import { IconSearch } from "../icon/icon-static/IconSearch";
 import { IconStarOutline, IconStarFill } from "../icon/icon-static/IconStar";
 import { IconPlus } from "../icon/icon-static/IconPlus";
 
 // context
-import useFormatLearnItem from "../../context/useFormatLearnItem";
 import useTheme from "../../theme/useTheme";
 import useOpenPopup from "../../context/useOpenPopup";
 
@@ -17,8 +14,6 @@ interface TabSectionProp {
 }
 
 export function TabSection({ tab }: TabSectionProp) {
-  const { format, selectFormat } = useFormatLearnItem();
-
   const { theme } = useTheme();
 
   const { handleOpenPopup } = useOpenPopup();
@@ -63,27 +58,7 @@ export function TabSection({ tab }: TabSectionProp) {
             color={`${theme === "light" ? "#000" : "#fff"}`}
           />
         </button>
-        <div className="flex overflow-hidden rounded-md border border-(--color-border-strong)">
-          <button
-            onClick={() => selectFormat("grid")}
-            className={`${format === "grid" ? "bg-(--color-primary-soft) px-4.5" : "px-1.75"} cursor-pointer py-1.75 transition-all duration-100`}
-          >
-            <IconGrid
-              size={20}
-              color={`${theme === "light" ? "#000" : "#fff"}`}
-            />
-          </button>
-          <button
-            onClick={() => selectFormat("line")}
 
-            className={`${format === "line" ? "bg-(--color-primary-soft) px-4.5" : "px-1.75"} cursor-pointer py-1.75 transition-all duration-100`}
-          >
-            <IconLine
-              size={20}
-              color={`${theme === "light" ? "#000" : "#fff"}`}
-            />
-          </button>
-        </div>
         <button
           onClick={() => handleOpenPopup("add-soruse")}
           className="text-small flex cursor-pointer items-center rounded-md bg-(--color-background-inverse) p-1.75 pr-3 pl-3 font-medium text-(--color-text-inverse)"
