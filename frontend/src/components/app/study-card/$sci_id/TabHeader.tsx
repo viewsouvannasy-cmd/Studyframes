@@ -102,7 +102,9 @@ export function TabHeader({ sci_id, section }: TabHeaderProp) {
             style={{ borderTopRightRadius: 17, borderBottomRightRadius: 17 }}
             className={`text-small z-10 flex h-full items-center rounded-l-md transition-colors duration-200 ${section === "quizs" ? "bg-(--color-primary-soft) px-3" : "px-1 pr-3 hover:bg-(--color-border)"}`}
           >
-            {current?.total_quizs} Quizs
+            {current?.total_quizs === 0
+              ? "No Quizs"
+              : `${current?.total_quizs} Quizs`}
           </Link>
 
           <div
