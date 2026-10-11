@@ -106,9 +106,66 @@ const createQuizs = async (
   }
 };
 
+const renameStudyCard = async (
+  isRetry = false,
+  { sci_id, new_name }: { sci_id: number; new_name: string },
+): Promise<void> => {
+  try {
+    const accessToken = getAccessToken();
+    await axios.put(
+      `${getEnv("VITE_SERVER_HOST")}/api/study-card/update/rename/${sci_id}`,
+      { new_name },
+      { headers: { Authorization: `Bearer ${accessToken}` } },
+    );
+  } catch (error) {
+    return handleAccessTokenError(error, isRetry, () =>
+      renameStudyCard(true, { sci_id, new_name }),
+    );
+  }
+};
+
+const changeStudyCardColor = async (
+  isRetry = false,
+  { sci_id, new_color }: { sci_id: number; new_color: string },
+): Promise<void> => {
+  try {
+    const accessToken = getAccessToken();
+    await axios.put(
+      `${getEnv("VITE_SERVER_HOST")}/api/study-card/update/change-color/${sci_id}`,
+      { new_color },
+      { headers: { Authorization: `Bearer ${accessToken}` } },
+    );
+  } catch (error) {
+    return await handleAccessTokenError(error, isRetry, () =>
+      changeStudyCardColor(true, { sci_id, new_color }),
+    );
+  }
+};
+
+const deleteStudyCard = async (
+  isRetry = false,
+  { sci_id }: { sci_id: number },
+): Promise<void> => {
+  try {
+    const accessToken = getAccessToken();
+    await axios.delete(
+      `${getEnv("VITE_SERVER_HOST")}/api/study-card/delete/${sci_id}`,
+
+      { headers: { Authorization: `Bearer ${accessToken}` } },
+    );
+  } catch (error) {
+    return await handleAccessTokenError(error, isRetry, () =>
+      deleteStudyCard(true, { sci_id }),
+    );
+  }
+};
+
 export {
   createStudyCardWithYouTube,
   getListStudyCard,
   getStudyCardLesson,
   createQuizs,
+  renameStudyCard,
+  changeStudyCardColor,
+  deleteStudyCard,
 };

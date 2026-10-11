@@ -15,6 +15,13 @@ import { STUDY_CARD_COLOR_PATTERNS } from "../../../constants/color";
 // helper function
 import { formatDuration } from "../../../utils/calculate";
 
+// api
+import {
+  useChangeCardColor,
+  useDeleteStudyCard,
+  useRenameStudyCard,
+} from "../../../api/study-card/study-card";
+
 // type
 import type { StudyCard } from "../../../types/Data";
 import type { StudyCardColorKey } from "../../../constants/color";
@@ -36,6 +43,11 @@ export function StudyCardItem({ item }: StudyCardItemProps) {
 
   const dropdownRef = useRef<HTMLDivElement>(null);
   const inputRenameRef = useRef<HTMLInputElement>(null);
+
+  // mutate
+  const { mutate: renameCard } = useRenameStudyCard();
+  const { mutate: chnageColorCard } = useChangeCardColor();
+  const { mutate: deleteCard } = useDeleteStudyCard();
 
   const [selectEdit, setSelectEdit] = useState<
     "rename" | "change-color" | null
@@ -76,20 +88,34 @@ export function StudyCardItem({ item }: StudyCardItemProps) {
 
   //  function rename card
   function handleRenameCard() {
+    if (inputRename.length < 5 && inputRename.length > 50) {
+      return;
+    }
+
     const updateItem = { ...cardItem };
     updateItem.sci_name = inputRename;
     setCardItem(updateItem);
     setSelectEdit(null);
+
+    renameCard({ sci_id: cardItem.sci_id, new_name: inputRename });
   }
 
   // function change card color
   function handleChangeColor(
     color: "blue" | "violet" | "amber" | "rose" | "teal" | "green",
   ) {
+    if (color === cardItem.color) {
+      setIsOpenDropDown(false);
+      setSelectEdit(null);
+      return;
+    }
+
     const updateItem = { ...cardItem };
     updateItem.color = color;
     setCardItem(updateItem);
     setIsOpenDropDown(false);
+
+    chnageColorCard({ sci_id: cardItem.sci_id, new_color: color });
   }
 
   // function delete card
@@ -98,8 +124,11 @@ export function StudyCardItem({ item }: StudyCardItemProps) {
     updateItem.create_at = new Date("1970-01-01T00:00:00Z");
     setCardItem(updateItem);
     setIsOpenDropDown(false);
+
+    deleteCard({ sci_id: cardItem.sci_id });
   }
 
+  //  remove card
   if (cardItem.create_at.toString().split(" ")[3] === "1970") {
     return null;
   }
@@ -221,7 +250,7 @@ export function StudyCardItem({ item }: StudyCardItemProps) {
             />
           ) : (
             <p className="sml:text-subsection text-body overflow-hidden font-medium text-ellipsis whitespace-nowrap">
-              {item.sci_name}
+              {cardItem.sci_name}
             </p>
           )}
 

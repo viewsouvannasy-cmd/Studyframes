@@ -7,6 +7,9 @@ import {
   getListStudyCard,
   getStudyCardLesson,
   createQuizs,
+  renameStudyCard,
+  changeStudyCardColor,
+  deleteStudyCard,
 } from "./study-card-func";
 
 // tyep
@@ -26,6 +29,33 @@ export const useCreateStudyCard = () => {
     { card_name: string; color: string; video_url: string }
   >({
     mutationFn: (variable) => createStudyCardWithYouTube(false, variable),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: STUDY_CARD_KEY });
+    },
+  });
+};
+
+export const useRenameStudyCard = () => {
+  return useMutation<void, void, { sci_id: number; new_name: string }>({
+    mutationFn: (variable) => renameStudyCard(false, variable),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: STUDY_CARD_KEY });
+    },
+  });
+};
+
+export const useChangeCardColor = () => {
+  return useMutation<void, void, { sci_id: number; new_color: string }>({
+    mutationFn: (variable) => changeStudyCardColor(false, variable),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: STUDY_CARD_KEY });
+    },
+  });
+};
+
+export const useDeleteStudyCard = () => {
+  return useMutation<void, void, { sci_id: number }>({
+    mutationFn: (variable) => deleteStudyCard(false, variable),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: STUDY_CARD_KEY });
     },
