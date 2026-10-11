@@ -17,6 +17,9 @@ import { AIiMessages } from "./AIMessage";
 // context
 import { useOpenChatSection } from "../../../../../context/useOpenChatSection";
 
+// constants
+import { SUGGESTION_MESSAGE } from "../../../../../constants/chat";
+
 // api
 import {
   useGetChatChapter,
@@ -40,6 +43,7 @@ export function ChatSection({ sci_id, section }: ChatSectionProps) {
   const [inputMessage, setInputMessage] = useState<string>("");
 
   const containerChatRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const { isChatOpen, toggleOpenChat } = useOpenChatSection();
 
@@ -57,13 +61,6 @@ export function ChatSection({ sci_id, section }: ChatSectionProps) {
     [newMessage, chatData],
   ) as ChatMessage[];
 
-  useEffect(() => {
-    const el = containerChatRef.current;
-    if (el) {
-      el.scrollTop = el.scrollHeight;
-    }
-  }, [chatMessage.length]);
-
   // this is use to get chat chapter
   const { mutate: createMessage, isPending: pendingCreate } = useSendMessage();
 
@@ -79,20 +76,23 @@ export function ChatSection({ sci_id, section }: ChatSectionProps) {
   };
 
   //  send message function
-  const handleSendMessage = () => {
-    if (inputMessage.trim().length === 0) {
+  const handleSendMessage = (content: string) => {
+    if (content.trim().length === 0) {
       return;
     }
 
-    setNewMessage([
-      { role: "user", content: inputMessage, create_at: new Date() },
-    ]);
+    if (pendingCreate) {
+      return;
+    }
+
+    setNewMessage([{ role: "user", content: content, create_at: new Date() }]);
     setInputMessage("");
+    inputRef.current?.blur();
 
     createMessage(
       {
         chapter_id: currentChapter?.chapter_id,
-        content: inputMessage,
+        content: content,
       },
       {
         onSuccess: (_data, variable) => {
@@ -113,6 +113,14 @@ export function ChatSection({ sci_id, section }: ChatSectionProps) {
     });
   };
 
+  useEffect(() => {
+    const el = containerChatRef.current;
+
+    if (el) {
+      el.scrollTop = el.scrollHeight;
+    }
+  }, [chatMessage.length]);
+
   return (
     <div
       className={`sticky top-4 ${isChatOpen === "open" && section !== "overview" ? "h-140 w-[35%]" : "h-11.5 w-11.5"} flex flex-col overflow-hidden rounded-2xl border border-(--color-border-strong) shadow-md shadow-olive-300 transition-all duration-200`}
@@ -128,6 +136,7 @@ export function ChatSection({ sci_id, section }: ChatSectionProps) {
           {chatMessage.length > 0 && (
             <button
               onClick={handleClearMessage}
+              disabled={pendingClear || pendingCreate}
               className="flex size-9 cursor-pointer items-center justify-center rounded-full border border-(--color-border-strong) transition-colors duration-200 hover:bg-[#F87171]"
             >
               {pendingClear ? (
@@ -174,13 +183,38 @@ export function ChatSection({ sci_id, section }: ChatSectionProps) {
               </div>
             );
           })}
+
+          {/* loading ai response */}
           {pendingCreate && <DotsLoad />}
         </div>
+
+        {/* Suggestion message */}
+        {chatMessage.length === 0 && (
+          <div className="w-[80%] p-4.5">
+            <p className="text-caption text-(--color-text-muted)">
+              Suggestion Message
+            </p>
+            <div className="mt-2 flex flex-col items-start gap-2">
+              {SUGGESTION_MESSAGE.map((msg, index) => {
+                return (
+                  <button
+                    onClick={() => handleSendMessage(msg)}
+                    key={index}
+                    className="text-small cursor-pointer rounded-md border border-(--color-border-strong) bg-(--color-surface-subtle) p-2 text-start hover:bg-(--color-surface-muted)"
+                  >
+                    {msg}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         <div className="flex flex-col gap-1 px-4 py-2">
           <div className="flex items-center gap-2 rounded-[25px] border border-(--color-border-strong) p-1.5 pl-4 shadow-(--shadow-floating) focus-within:outline-2 focus-within:outline-(--color-primary)">
             <textarea
               rows={1}
+              ref={inputRef}
               placeholder="Write a message..."
               className="text-small field-sizing-content max-h-40 w-full resize-none overflow-y-auto outline-none"
               onChange={(e) => setInputMessage(e.target.value)}
@@ -191,20 +225,21 @@ export function ChatSection({ sci_id, section }: ChatSectionProps) {
                   !e.nativeEvent.isComposing
                 ) {
                   e.preventDefault();
-                  handleSendMessage();
+                  handleSendMessage(inputMessage);
                 }
               }}
               value={inputMessage}
             />
             <button
               disabled={inputMessage.trim().length === 0}
-              onClick={handleSendMessage}
+              onClick={() => handleSendMessage(inputMessage)}
               className={`relative flex size-8.5 shrink-0 self-end ${inputMessage.trim().length === 0 ? "cursor-not-allowed" : "cursor-pointer"} items-center justify-center overflow-hidden rounded-full border border-(--color-border-strong) bg-(--color-primary-soft)`}
             >
               <div
                 className="absolute h-full w-full bg-linear-to-t from-(--color-primary-soft) to-(--color-primary) mask-[linear-gradient(to_top,black_85%,transparent_100%)] transition-all duration-200"
                 style={{
-                  opacity: inputMessage.trim().length > 0 ? 1 : 0,
+                  opacity:
+                    inputMessage.trim().length > 0 && !pendingCreate ? 1 : 0,
                 }}
               />
               <IconArrow

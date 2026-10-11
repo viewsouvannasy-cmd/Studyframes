@@ -38,11 +38,11 @@ export function ListStudyCardSection({ title }: DisplayItemSectionProps) {
         </div>
 
         {isLoading &&
-          new Array(4).fill(null).map((_, index) => {
+          new Array(7).fill(null).map((_, index) => {
             return (
               <div
                 key={index}
-                className="animate-pulse rounded-xl bg-gray-300"
+                className="sml:min-h-53.25 animate-pulse rounded-xl bg-gray-300"
               />
             );
           })}
