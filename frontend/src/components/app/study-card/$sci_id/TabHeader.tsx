@@ -104,9 +104,10 @@ export function TabHeader({ sci_id, section }: TabHeaderProp) {
           >
             {current?.total_quizs === 0
               ? "No Quizs"
-              : `${current?.total_quizs} Quizs`}
+              : `${!current?.total_quizs ? "" : current?.total_quizs} Quizs`}
           </Link>
 
+          {/* drop down */}
           <div
             className={`absolute top-4 -right-px -left-px overflow-hidden rounded-b-lg border-t-0 border-(--color-border-strong) bg-(--color-background) shadow-(--shadow-floating) transition-all duration-200 [clip-path:inset(0_-20px_-20px_-20px)] ${isOpenDropDown ? "h-auto border p-0.5 pt-7" : "h-0"}`}
           >
@@ -134,7 +135,6 @@ export function TabHeader({ sci_id, section }: TabHeaderProp) {
           </div>
         </div>
       </div>
-      <button className="text-small hidden md:flex"></button>
     </div>
   );
 }

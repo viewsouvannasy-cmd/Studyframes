@@ -3,6 +3,7 @@ import { queryClient } from "../../config/queryClient";
 
 // call func
 import {
+  checkCanCreateStudyCard,
   createStudyCardWithYouTube,
   getListStudyCard,
   getStudyCardLesson,
@@ -22,16 +23,23 @@ import {
   STUDY_CARD_LESSON_KEY,
 } from "../../constants/queryKey";
 
+export const useCheckCanCreateStudyCard = () => {
+  return useMutation<
+    ResponseStatus,
+    AxiosError<ResponseStatus>,
+    { card_name: string; color: string; video_url: string }
+  >({
+    mutationFn: (variable) => checkCanCreateStudyCard(false, variable),
+  });
+};
+
 export const useCreateStudyCard = () => {
   return useMutation<
-    { ok: boolean; msg: string },
+    { ok: boolean; results: { sci_id: number } },
     AxiosError<ResponseStatus>,
     { card_name: string; color: string; video_url: string }
   >({
     mutationFn: (variable) => createStudyCardWithYouTube(false, variable),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: STUDY_CARD_KEY });
-    },
   });
 };
 

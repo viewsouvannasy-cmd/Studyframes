@@ -7,13 +7,37 @@ import type {
   Quizs,
 } from "../../types/Data.js";
 
+export const readToFindExistIngVideo = async (videoId: string) => {
+  return (await sql`
+    SELECT 
+    pc.pc_id
+    FROM public_study_card_items as psci
+    INNER JOIN public_chapters as pc
+    ON psci.psci_id = pc.psci_id
+    WHERE psci.psci_id = ${videoId}
+    `) as { pc_id: number }[];
+};
+
+export const readUserAlreadyHaveOne = async (
+  videoId: string,
+  user_id: number,
+) => {
+  return await sql`
+      SELECT 
+      * 
+      FROM study_card_items 
+      WHERE user_id = ${user_id} 
+      AND psci_id = ${videoId}
+      `;
+};
+
 export const writePublicStudyCard = async (
   videoFullDatail: VideoFullDatail,
   videoId: string,
   video_url: string,
 ) => {
   await sql`
-    INSERT INTO public_study_card_items (psci_id , credit_source ,title, total_chapters, total_length_seconds, source_type, instructor, video_url, video_thumbnail_url, license, psci_type, is_reusable)
+    INSERT INTO public_study_card_items(psci_id , credit_source ,title, total_chapters, total_length_seconds, source_type, instructor, video_url, video_thumbnail_url, license, psci_type, is_reusable)
     VALUES (
     ${videoId},
     ${videoFullDatail.channel},
@@ -230,5 +254,12 @@ export const deleteStudyCardItem = async (sci_id: number, user_id: number) => {
   WHERE sci_id = ${sci_id}
   AND user_id = ${user_id}
   RETURNING *
+  `;
+};
+
+export const deleteChapterRelateToCard = async (sci_id: number) => {
+  await sql`
+  DELETE FROM chapters 
+  WHERE sci_id = ${sci_id}
   `;
 };

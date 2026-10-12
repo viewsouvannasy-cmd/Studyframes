@@ -123,7 +123,7 @@ export function ChatSection({ sci_id, section }: ChatSectionProps) {
 
   return (
     <div
-      className={`sticky top-4 ${isChatOpen === "open" && section !== "overview" ? "h-140 w-[35%]" : "h-11.5 w-11.5"} flex flex-col overflow-hidden rounded-2xl border border-(--color-border-strong) shadow-md shadow-olive-300 transition-all duration-200`}
+      className={`sticky top-4 ${isChatOpen === "open" && section !== "overview" && section !== "loading" ? "h-140 w-[35%]" : "h-11.5 w-11.5"} flex flex-col overflow-hidden rounded-2xl border border-(--color-border-strong) shadow-md shadow-olive-300 transition-all duration-200`}
     >
       <div className="flex items-center justify-between border-b border-(--color-border-strong) p-1">
         <div className="flex gap-2">
@@ -154,7 +154,7 @@ export function ChatSection({ sci_id, section }: ChatSectionProps) {
         </div>
 
         <span
-          className={`${isChatOpen === "open" && section !== "overview" ? "" : "hidden"} text-caption mr-2 text-(--color-text-secondary)`}
+          className={`${isChatOpen === "open" && section !== "overview" && section !== "loading" ? "" : "hidden"} text-caption mr-2 text-(--color-text-secondary)`}
         >
           Chat On {section.replace("c", "C")}
         </span>

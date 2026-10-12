@@ -3,6 +3,7 @@ const route = Router();
 
 import {
   createStudyCard,
+  checkCanCreateStudyCard,
   getListStudyCard,
   getStudyCardLesson,
   createQuizs,
@@ -11,8 +12,9 @@ import {
   deleteStudyCard,
 } from "../../controllers/study-card/study-card-controller.js";
 
-// create study card item
+// check and create  study card item
 route.post("/create", createStudyCard);
+route.post("/create/check", checkCanCreateStudyCard);
 
 // get list of  study card
 route.get("/get-list", getListStudyCard);

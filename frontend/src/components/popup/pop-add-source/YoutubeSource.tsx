@@ -1,4 +1,6 @@
+// library
 import { useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
 
 // component
 import { IconX } from "../../icon/icon-static/IconX";
@@ -9,37 +11,37 @@ import { SipnnerLoad } from "../../loading-state/SipnnerLoad";
 // context
 import useTheme from "../../../theme/useTheme";
 import useOpenPopup from "../../../context/useOpenPopup";
+import useInputYoutubeSrc from "../../../context/useInputYoututeScr";
 
 // helper function
 import useMediaQuery from "../../../hook/useMediaQuery";
 
+// api
+import { useCheckCanCreateStudyCard } from "../../../api/study-card/study-card";
+
 // constands
 import { STUDY_CARD_COLOR_PATTERNS } from "../../../constants/color";
 
-// api
-import { useCreateStudyCard } from "../../../api/study-card/study-card";
-
 // type
 import type { ResponseStatus } from "../../../types/auth-type";
+import type { StudyCardColorKey } from "../../../constants/color";
 
 interface YoutubeSourceProps {
   setCurrentPage: (page: "default" | "video" | "file") => void;
-  inputStudyCardName: string;
 }
 
-export function YoutubeSource({
-  setCurrentPage,
-  inputStudyCardName,
-}: YoutubeSourceProps) {
-  const [inputYoutubeLink, setInputYoutubeLink] = useState<string>("");
+export function YoutubeSource({ setCurrentPage }: YoutubeSourceProps) {
+  const navigate = useNavigate();
 
   const { theme } = useTheme();
 
   const [responseError, setResponseError] = useState<ResponseStatus>();
 
-  const { mutate, isPending } = useCreateStudyCard();
-
   const { handlerClosePopup } = useOpenPopup();
+
+  const { inputData, setInput, setColor, clearInput } = useInputYoutubeSrc();
+
+  const { mutate, isPending } = useCheckCanCreateStudyCard();
 
   const media = useMediaQuery("(min-width: 640px)");
 
@@ -47,6 +49,7 @@ export function YoutubeSource({
     handlerClosePopup(media);
     setTimeout(() => {
       setCurrentPage("default");
+      clearInput();
     }, 300);
   }
 
@@ -55,24 +58,36 @@ export function YoutubeSource({
 
     const colorArray = Object.keys(STUDY_CARD_COLOR_PATTERNS);
 
-    const randomColor =
-      colorArray[Math.floor(Math.random() * colorArray.length)];
+    const randomColor = colorArray[
+      Math.floor(Math.random() * colorArray.length)
+    ] as StudyCardColorKey;
+
+    setColor(randomColor);
 
     mutate(
       {
-        card_name: inputStudyCardName,
+        card_name: inputData.card_name,
         color: randomColor,
-        video_url: inputYoutubeLink,
+        video_url: inputData.video_url,
       },
       {
+        onSuccess: () => {
+          navigate({
+            to: "/app/study-card/loading",
+            state: {
+              card_name: inputData.card_name,
+              color: randomColor,
+              video_url: inputData.video_url,
+            },
+          });
+          clearInput();
+          handlerClosePopup();
+        },
         onError: (error) => {
           const errResponse = error.response?.data;
           if (errResponse) {
             setResponseError(errResponse);
           }
-        },
-        onSuccess: () => {
-          handlerClosePopup();
         },
       },
     );
@@ -127,9 +142,9 @@ export function YoutubeSource({
               <textarea
                 className={`text-caption ${responseError?.point === "input-youtube-url" ? "border-(--color-error-text)" : "border-(--color-border-strong)"} h-25 w-full resize-none rounded-md border bg-(--color-background) p-2 focus:outline-(--color-focus-ring)`}
                 placeholder="Pasts your url here"
-                onChange={(e) => setInputYoutubeLink(e.target.value)}
+                onChange={(e) => setInput("video_url", e.target.value)}
                 onFocus={removeErrorHightLight}
-                value={inputYoutubeLink}
+                value={inputData.video_url}
                 required
               />
               {responseError?.point === "input-youtube-url" && (
@@ -160,8 +175,7 @@ export function YoutubeSource({
           <span className="absolute inset-0 bg-linear-to-b from-(--color-primary) to-(--color-primary-soft)" />
           <span className="absolute inset-0 bg-linear-to-b from-(--color-primary) from-[-50%] to-(--color-primary-soft) opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
           <span className="text-small relative">
-            {!isPending && "Create"}
-            {isPending && <SipnnerLoad color="#000" />}
+            {isPending ? <SipnnerLoad /> : "Create"}
           </span>
         </button>
       </div>

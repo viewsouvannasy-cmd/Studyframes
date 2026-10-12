@@ -16,6 +16,7 @@ import { Route as authVerifyRouteImport } from './routes/(auth)/verify'
 import { Route as AppAllRouteImport } from './routes/app/all'
 import { Route as AppRecommendRouteImport } from './routes/app/recommend'
 import { Route as AppStudyCardIndexRouteImport } from './routes/app/study-card/index'
+import { Route as AppStudyCardLoadingRouteImport } from './routes/app/study-card/loading'
 import { Route as AppStudyCardSci_idSectionIndexRouteImport } from './routes/app/study-card/$sci_id/$section/index'
 import { Route as AppStudyCardSci_idSectionQuizsIndexRouteImport } from './routes/app/study-card/$sci_id/$section/$quizs/index'
 
@@ -54,6 +55,11 @@ const AppStudyCardIndexRoute = AppStudyCardIndexRouteImport.update({
   path: '/app/study-card/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppStudyCardLoadingRoute = AppStudyCardLoadingRouteImport.update({
+  id: '/app/study-card/loading',
+  path: '/app/study-card/loading',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AppStudyCardSci_idSectionIndexRoute =
   AppStudyCardSci_idSectionIndexRouteImport.update({
     id: '/app/study-card/$sci_id/$section/',
@@ -74,6 +80,7 @@ export interface FileRoutesByFullPath {
   '/verify': typeof authVerifyRoute
   '/app/all': typeof AppAllRoute
   '/app/recommend': typeof AppRecommendRoute
+  '/app/study-card/loading': typeof AppStudyCardLoadingRoute
   '/app/study-card/': typeof AppStudyCardIndexRoute
   '/app/study-card/$sci_id/$section/': typeof AppStudyCardSci_idSectionIndexRoute
   '/app/study-card/$sci_id/$section/$quizs/': typeof AppStudyCardSci_idSectionQuizsIndexRoute
@@ -85,6 +92,7 @@ export interface FileRoutesByTo {
   '/verify': typeof authVerifyRoute
   '/app/all': typeof AppAllRoute
   '/app/recommend': typeof AppRecommendRoute
+  '/app/study-card/loading': typeof AppStudyCardLoadingRoute
   '/app/study-card': typeof AppStudyCardIndexRoute
   '/app/study-card/$sci_id/$section': typeof AppStudyCardSci_idSectionIndexRoute
   '/app/study-card/$sci_id/$section/$quizs': typeof AppStudyCardSci_idSectionQuizsIndexRoute
@@ -97,6 +105,7 @@ export interface FileRoutesById {
   '/(auth)/verify': typeof authVerifyRoute
   '/app/all': typeof AppAllRoute
   '/app/recommend': typeof AppRecommendRoute
+  '/app/study-card/loading': typeof AppStudyCardLoadingRoute
   '/app/study-card/': typeof AppStudyCardIndexRoute
   '/app/study-card/$sci_id/$section/': typeof AppStudyCardSci_idSectionIndexRoute
   '/app/study-card/$sci_id/$section/$quizs/': typeof AppStudyCardSci_idSectionQuizsIndexRoute
@@ -110,6 +119,7 @@ export interface FileRouteTypes {
     | '/verify'
     | '/app/all'
     | '/app/recommend'
+    | '/app/study-card/loading'
     | '/app/study-card/'
     | '/app/study-card/$sci_id/$section/'
     | '/app/study-card/$sci_id/$section/$quizs/'
@@ -121,6 +131,7 @@ export interface FileRouteTypes {
     | '/verify'
     | '/app/all'
     | '/app/recommend'
+    | '/app/study-card/loading'
     | '/app/study-card'
     | '/app/study-card/$sci_id/$section'
     | '/app/study-card/$sci_id/$section/$quizs'
@@ -132,6 +143,7 @@ export interface FileRouteTypes {
     | '/(auth)/verify'
     | '/app/all'
     | '/app/recommend'
+    | '/app/study-card/loading'
     | '/app/study-card/'
     | '/app/study-card/$sci_id/$section/'
     | '/app/study-card/$sci_id/$section/$quizs/'
@@ -144,6 +156,7 @@ export interface RootRouteChildren {
   authVerifyRoute: typeof authVerifyRoute
   AppAllRoute: typeof AppAllRoute
   AppRecommendRoute: typeof AppRecommendRoute
+  AppStudyCardLoadingRoute: typeof AppStudyCardLoadingRoute
   AppStudyCardIndexRoute: typeof AppStudyCardIndexRoute
   AppStudyCardSci_idSectionIndexRoute: typeof AppStudyCardSci_idSectionIndexRoute
   AppStudyCardSci_idSectionQuizsIndexRoute: typeof AppStudyCardSci_idSectionQuizsIndexRoute
@@ -200,6 +213,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppStudyCardIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app/study-card/loading': {
+      id: '/app/study-card/loading'
+      path: '/app/study-card/loading'
+      fullPath: '/app/study-card/loading'
+      preLoaderRoute: typeof AppStudyCardLoadingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/app/study-card/$sci_id/$section/': {
       id: '/app/study-card/$sci_id/$section/'
       path: '/app/study-card/$sci_id/$section'
@@ -224,6 +244,7 @@ const rootRouteChildren: RootRouteChildren = {
   authVerifyRoute: authVerifyRoute,
   AppAllRoute: AppAllRoute,
   AppRecommendRoute: AppRecommendRoute,
+  AppStudyCardLoadingRoute: AppStudyCardLoadingRoute,
   AppStudyCardIndexRoute: AppStudyCardIndexRoute,
   AppStudyCardSci_idSectionIndexRoute: AppStudyCardSci_idSectionIndexRoute,
   AppStudyCardSci_idSectionQuizsIndexRoute:

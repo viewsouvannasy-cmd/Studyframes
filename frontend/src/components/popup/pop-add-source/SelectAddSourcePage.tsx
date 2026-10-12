@@ -6,23 +6,22 @@ import { IconFile } from "../../icon/icon-static/IconFile";
 // context
 import useTheme from "../../../theme/useTheme";
 import useOpenPopup from "../../../context/useOpenPopup";
+import useInputYoutubeSrc from "../../../context/useInputYoututeScr";
 
 // helper function
 import useMediaQuery from "../../../hook/useMediaQuery";
 
 interface SelectAddSourcePageProps {
   setCurrentPage: (page: "default" | "video" | "file") => void;
-  setInputStudyCardName: (input: string) => void;
-  inputStudyCardName: string;
 }
 
 export function SelectAddSourcePage({
   setCurrentPage,
-  setInputStudyCardName,
-  inputStudyCardName,
 }: SelectAddSourcePageProps) {
   const { theme } = useTheme();
   const { handlerClosePopup } = useOpenPopup();
+
+  const { inputData, setInput, clearInput } = useInputYoutubeSrc();
 
   const media = useMediaQuery("(min-width: 640px)");
   return (
@@ -30,7 +29,10 @@ export function SelectAddSourcePage({
       <div className="flex flex-col justify-center">
         <IconX
           color={theme === "dark" ? "#fff" : "#000"}
-          onClick={() => handlerClosePopup()}
+          onClick={() => {
+            handlerClosePopup();
+            clearInput();
+          }}
           className="mb-1 cursor-pointer self-end sm:hidden"
         />
         <div className="flex flex-1 justify-center sm:justify-between">
@@ -42,7 +44,10 @@ export function SelectAddSourcePage({
           <IconX
             color={theme === "dark" ? "#fff" : "#000"}
             className="hidden cursor-pointer sm:flex"
-            onClick={() => handlerClosePopup(media)}
+            onClick={() => {
+              handlerClosePopup(media);
+              clearInput();
+            }}
           />
         </div>
       </div>
@@ -51,8 +56,8 @@ export function SelectAddSourcePage({
         <label className="text-body w-full">Name Your NoteBook</label>
         <input
           className="text-small w-full border p-4 focus:outline-(--color-focus-ring)"
-          onChange={(e) => setInputStudyCardName(e.target.value)}
-          value={inputStudyCardName}
+          onChange={(e) => setInput("card_name", e.target.value)}
+          value={inputData.card_name}
         />
       </div>
 
