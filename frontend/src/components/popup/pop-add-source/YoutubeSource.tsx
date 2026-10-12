@@ -71,6 +71,9 @@ export function YoutubeSource({
             setResponseError(errResponse);
           }
         },
+        onSuccess: () => {
+          handlerClosePopup();
+        },
       },
     );
   };
@@ -88,6 +91,7 @@ export function YoutubeSource({
         <div className="flex flex-col items-center sm:flex-row sm:items-start sm:justify-between">
           <div className="mb-1 flex w-full justify-between sm:hidden">
             <IconArrow
+              strokeWidth={2}
               className="rotate-270 cursor-pointer"
               color={theme === "dark" ? "#fff" : "#000"}
               onClick={() => setCurrentPage("default")}
@@ -99,6 +103,7 @@ export function YoutubeSource({
             />
           </div>
           <IconArrow
+            strokeWidth={2}
             className="hidden rotate-270 cursor-pointer sm:flex"
             color={theme === "dark" ? "#fff" : "#000"}
             onClick={() => setCurrentPage("default")}

@@ -12,6 +12,9 @@ import {
   readStudyCardLesson,
   writePublicQuizs,
   writeUserGeneratedQuizs,
+  writeNewNameCardItem,
+  writeNewColorCardItem,
+  deleteStudyCardItem,
 } from "./sc-query.js";
 
 // helper function
@@ -29,6 +32,9 @@ import {
   ANALYSIS_YOUTUBE_VIDEO,
   CREATE_QUIZS,
 } from "../../constants/system-prompt.js";
+
+// constant
+import { ALLOW_STUDY_CARD_COLOR } from "../../constants/color.js";
 
 // type
 import type { StudyCardLesson, Quizs } from "../../types/Data.js";
@@ -326,4 +332,88 @@ const createQuizs = async (
   }
 };
 
-export { createStudyCard, getListStudyCard, getStudyCardLesson, createQuizs };
+// this function is use rename study card item
+const renameStudyCard = async (
+  req: Request<{ sci_id: number }, {}, { user_id: number; new_name: string }>,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { user_id, new_name } = req.body;
+    const { sci_id } = req.params;
+
+    if (!new_name) {
+      return res.status(400).json({ ok: false, msg: "Please provide name" });
+    }
+
+    if (new_name.length < 5 && new_name.length > 50) {
+      return res.status(400).json({ ok: false, msg: "invalid name" });
+    }
+
+    const results = await writeNewNameCardItem(new_name, sci_id, user_id);
+    if (results.length === 0) {
+      return res.status(400).json({ ok: false, msg: "item is undefined" });
+    }
+
+    res.status(200).json({ ok: true, msg: "rename success" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// this function is use to change card color
+const changeStudyCardColor = async (
+  req: Request<{ sci_id: number }, {}, { user_id: number; new_color: string }>,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { user_id, new_color } = req.body;
+    const { sci_id } = req.params;
+
+    // check allow color
+    if (!new_color || !ALLOW_STUDY_CARD_COLOR.includes(new_color)) {
+      return res.status(400).json({ ok: false, msg: "invalid color" });
+    }
+
+    const results = await writeNewColorCardItem(sci_id, new_color, user_id);
+    if (results.length === 0) {
+      return res.status(400).json({ ok: false, msg: "item is undefined" });
+    }
+
+    res.status(200).json({ ok: true, msg: "change color success" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// this function is use to remove card item
+const deleteStudyCard = async (
+  req: Request<{ sci_id: number }, {}, { user_id: number }>,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { user_id } = req.body;
+    const { sci_id } = req.params;
+
+    const results = await deleteStudyCardItem(sci_id, user_id);
+    if (results.length === 0) {
+      return res.status(400).json({ ok: false, msg: "item is undefined" });
+    }
+
+    res.status(200).json({ ok: true, msg: "delete card success" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export {
+  createStudyCard,
+  getListStudyCard,
+  getStudyCardLesson,
+  createQuizs,
+  renameStudyCard,
+  changeStudyCardColor,
+  deleteStudyCard,
+};

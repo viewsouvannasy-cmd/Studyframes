@@ -108,8 +108,9 @@ export const readUserStudyCard = async (user_id: number) => {
       sci.create_at
     FROM study_card_items AS sci 
     INNER JOIN public_study_card_items AS psci 
-    ON sci.psci_id = psci.psci_id
+    ON sci.psci_id = psci.psci_id 
     WHERE user_id = ${user_id}
+    ORDER BY create_at DESC
     `) as ListStudyCard[];
 };
 
@@ -193,4 +194,41 @@ export const writePublicQuizs = async (
   }
   await writeTotalQuizs(quizs.length, pc_id);
   await writeUserGeneratedQuizs(chapter_id);
+};
+
+export const writeNewNameCardItem = async (
+  new_name: string,
+  sci_id: number,
+  user_id: number,
+) => {
+  return await sql`
+  UPDATE study_card_items 
+  SET sci_name = ${new_name}
+  WHERE sci_id = ${sci_id} 
+  AND user_id = ${user_id}
+  RETURNING *
+  `;
+};
+
+export const writeNewColorCardItem = async (
+  sci_id: number,
+  new_color: string,
+  user_id: number,
+) => {
+  return await sql`
+  UPDATE study_card_items   
+  SET color = ${new_color}
+  WHERE sci_id = ${sci_id}
+  AND user_id = ${user_id}
+  RETURNING *
+`;
+};
+
+export const deleteStudyCardItem = async (sci_id: number, user_id: number) => {
+  return await sql`
+  DELETE FROM study_card_items 
+  WHERE sci_id = ${sci_id}
+  AND user_id = ${user_id}
+  RETURNING *
+  `;
 };

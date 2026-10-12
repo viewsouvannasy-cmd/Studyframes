@@ -128,7 +128,12 @@ export function ChatSection({ sci_id, section }: ChatSectionProps) {
       <div className="flex items-center justify-between border-b border-(--color-border-strong) p-1">
         <div className="flex gap-2">
           <button
-            onClick={toggleOpenChat}
+            onClick={() => {
+              if (section === "overview") {
+                return;
+              }
+              toggleOpenChat();
+            }}
             className="flex size-9 cursor-pointer items-center justify-center rounded-full border border-(--color-border-strong) transition-colors duration-200 hover:bg-(--color-primary-soft)"
           >
             <IconSideBar size={19} strokeWidth={2} />
