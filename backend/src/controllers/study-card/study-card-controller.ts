@@ -4,6 +4,8 @@ import { sql } from "../../config/database.js";
 
 // query
 import {
+  readToFindExistIngVideo,
+  readUserAlreadyHaveOne,
   writePublicStudyCard,
   writeStudyCard,
   writePublicChaptersAndUserChapters,
@@ -15,6 +17,7 @@ import {
   writeNewNameCardItem,
   writeNewColorCardItem,
   deleteStudyCardItem,
+  deleteChapterRelateToCard,
 } from "./sc-query.js";
 
 // helper function
@@ -39,10 +42,92 @@ import { ALLOW_STUDY_CARD_COLOR } from "../../constants/color.js";
 // type
 import type { StudyCardLesson, Quizs } from "../../types/Data.js";
 
-const createStudyCard = async (
+// this function is use to check before createing card
+const checkCanCreateStudyCard = async (
   req: Request<
     {},
     {},
+    { user_id: number; card_name: string; color: string; video_url: string }
+  >,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { user_id, card_name, color, video_url } = req.body;
+
+    if (!color || !video_url) {
+      return res.status(400).json({
+        ok: false,
+        msg: "Please provide all requires",
+      });
+    }
+
+    if (card_name.length > 50) {
+      return res.status(400).json({
+        ok: false,
+        msg: "card name length limit at 50 character",
+      });
+    }
+
+    // get video id for video url
+    const videoId = extractVideoId(video_url);
+    if (!videoId) {
+      return res.status(400).json({
+        ok: false,
+        point: "input-youtube-url",
+        msg: "invalid Youtube URL",
+      });
+    }
+
+    // check existing video to reuse it
+    const existVideo = await readToFindExistIngVideo(videoId);
+    if (existVideo.length > 0) {
+      // if user already have one
+      const [isUserAlreadyHave] = await readUserAlreadyHaveOne(
+        videoId,
+        user_id,
+      );
+      if (isUserAlreadyHave) {
+        return res.status(400).json({
+          ok: false,
+          point: "input-youtube-url",
+          msg: "You are already have one",
+        });
+      }
+
+      return res.status(200).json({ ok: true, msg: "able to create" });
+    }
+
+    // get video transcript
+    const transcript = await getTranscript(videoId);
+    if (!transcript) {
+      return res.status(400).json({
+        ok: false,
+        point: "input-youtube-url",
+        msg: "can not get transcript from this video",
+      });
+    }
+
+    // get video chapters and detail
+    const videoDatail = await getVideoChapter(videoId);
+    if (!videoDatail || !videoDatail.chapters) {
+      return res.status(400).json({
+        ok: false,
+        point: "input-youtube-url",
+        msg: "this video is not have an any chapters",
+      });
+    }
+
+    return res.status(200).json({ ok: true, msg: "able to create" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const createStudyCard = async (
+  req: Request<
+    {},
+    { ok: boolean; msg?: string; results?: { sci_id: number } },
     { user_id: number; card_name: string; color: string; video_url: string }
   >,
   res: Response,
@@ -68,23 +153,20 @@ const createStudyCard = async (
       });
     }
 
+    if (card_name.length > 50) {
+      return res.status(400).json({
+        ok: false,
+        msg: "card name length limit at 50 character",
+      });
+    }
+
     // check existing video to reuse it
-    const findExistVideo = (await sql`
-    SELECT 
-    pc.pc_id
-    FROM public_study_card_items as psci
-    INNER JOIN public_chapters as pc
-    ON psci.psci_id = pc.psci_id
-    WHERE psci.psci_id = ${videoId}
-    `) as { pc_id: number }[];
-    if (findExistVideo.length > 0) {
-      const [isUserAlreadyHave] = await sql`
-      SELECT 
-      * 
-      FROM study_card_items 
-      WHERE user_id = ${user_id} 
-      AND psci_id = ${videoId}
-      `;
+    const existVideo = await readToFindExistIngVideo(videoId);
+    if (existVideo.length > 0) {
+      const [isUserAlreadyHave] = await readUserAlreadyHaveOne(
+        videoId,
+        user_id,
+      );
       if (isUserAlreadyHave) {
         return res.status(400).json({
           ok: false,
@@ -101,11 +183,11 @@ const createStudyCard = async (
       );
 
       // create user chapter
-      await writeUserChapter(findExistVideo, studyCardItem);
+      await writeUserChapter(existVideo, studyCardItem);
 
-      res.status(200).json({
+      return res.status(200).json({
         ok: true,
-        msg: "Create successfull",
+        results: { sci_id: studyCardItem.sci_id },
       });
     }
 
@@ -192,7 +274,7 @@ const createStudyCard = async (
 
     res.status(200).json({
       ok: true,
-      msg: "Create successfull",
+      results: { sci_id: studyCardItem.sci_id },
     });
   } catch (error) {
     next(error);
@@ -402,6 +484,9 @@ const deleteStudyCard = async (
       return res.status(400).json({ ok: false, msg: "item is undefined" });
     }
 
+    // delete a user chapter
+    await deleteChapterRelateToCard(sci_id);
+
     res.status(200).json({ ok: true, msg: "delete card success" });
   } catch (error) {
     next(error);
@@ -410,6 +495,7 @@ const deleteStudyCard = async (
 
 export {
   createStudyCard,
+  checkCanCreateStudyCard,
   getListStudyCard,
   getStudyCardLesson,
   createQuizs,

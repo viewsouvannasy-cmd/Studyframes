@@ -7,6 +7,41 @@ import { handleAccessTokenError } from "../../utils/handleError";
 import type { ResponseStatus } from "../../types/auth-type";
 import type { StudyCard, StudyCardLesson } from "../../types/Data";
 
+export const checkCanCreateStudyCard = async (
+  isRetry = false,
+  {
+    card_name,
+    color,
+    video_url,
+  }: { card_name: string; color: string; video_url: string },
+): Promise<ResponseStatus> => {
+  try {
+    const accessToken = getAccessToken();
+    const response = await axios.post(
+      `${getEnv("VITE_SERVER_HOST")}/api/study-card/create/check`,
+      {
+        card_name,
+        color,
+        video_url,
+      },
+      { headers: { Authorization: `Bearer ${accessToken}` } },
+    );
+    return response.data;
+  } catch (error) {
+    if (
+      axios.isAxiosError<ResponseStatus>(error) &&
+      error.response &&
+      error.response.status !== 401
+    ) {
+      throw error;
+    }
+
+    return await handleAccessTokenError(error, isRetry, () =>
+      checkCanCreateStudyCard(true, { card_name, color, video_url }),
+    );
+  }
+};
+
 const createStudyCardWithYouTube = async (
   isRetry = false,
   {
@@ -14,7 +49,7 @@ const createStudyCardWithYouTube = async (
     color,
     video_url,
   }: { card_name: string; color: string; video_url: string },
-): Promise<{ ok: boolean; msg: string }> => {
+): Promise<{ ok: boolean; results: { sci_id: number } }> => {
   try {
     const accessToken = getAccessToken();
     const response = await axios.post(
