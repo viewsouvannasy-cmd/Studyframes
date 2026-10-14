@@ -6,6 +6,7 @@ import type {
   StudyCardLesson,
   Quizs,
 } from "../../types/Data.js";
+import { sql_v1beta4 } from "googleapis";
 
 export const readToFindExistIngVideo = async (videoId: string) => {
   return (await sql`

@@ -4,7 +4,7 @@ import { getAccessToken } from "../../../token/access-token";
 import { handleAccessTokenError } from "../../../utils/handleError";
 
 // type
-import type { ChatMessage } from "../../../types/Data";
+import type { ChatMessage, Quizs } from "../../../types/Data";
 
 export const getChatChapter = async (
   isRetry = false,
@@ -56,6 +56,53 @@ export const clearChatChapter = async (
   } catch (error) {
     return await handleAccessTokenError(error, isRetry, () =>
       clearChatChapter(true, { chapter_id }),
+    );
+  }
+};
+
+export const getChapterQuizzs = async (
+  isRetry = false,
+  { chapter_id }: { chapter_id: number | undefined },
+): Promise<Quizs[] | []> => {
+  try {
+    const accessToken = getAccessToken();
+    const response = await axios.get(
+      `${getEnv("VITE_SERVER_HOST")}/api/chapter/get/quiz/${chapter_id}`,
+      { headers: { Authorization: `Bearer ${accessToken}` } },
+    );
+
+    return response.data.results;
+  } catch (error) {
+    return await handleAccessTokenError(error, isRetry, () =>
+      getChapterQuizzs(true, { chapter_id }),
+    );
+  }
+};
+
+export const answerQuiz = async (
+  isRetry = false,
+  {
+    sci_id,
+    pq_id,
+    answer,
+    is_correct,
+  }: {
+    sci_id: number;
+    pq_id: number;
+    answer: "A" | "B" | "C";
+    is_correct: boolean;
+  },
+): Promise<void> => {
+  try {
+    const accessToken = getAccessToken();
+    await axios.post(
+      `${getEnv("VITE_SERVER_HOST")}/api/chapter/answer/quiz/${sci_id}/${pq_id}`,
+      { answer, is_correct },
+      { headers: { Authorization: `Bearer ${accessToken}` } },
+    );
+  } catch (error) {
+    return await handleAccessTokenError(error, isRetry, () =>
+      answerQuiz(true, { sci_id, pq_id, answer, is_correct }),
     );
   }
 };

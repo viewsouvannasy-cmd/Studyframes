@@ -41,6 +41,7 @@ import { ALLOW_STUDY_CARD_COLOR } from "../../constants/color.js";
 
 // type
 import type { StudyCardLesson, Quizs } from "../../types/Data.js";
+import { read } from "node:fs";
 
 // this function is use to check before createing card
 const checkCanCreateStudyCard = async (
@@ -337,16 +338,16 @@ const createQuizs = async (
     const isAlreadyHaveQuizs = await sql`
     SELECT 
       pq.pq_id
-    FROM study_card_items as sci
-    INNER JOIN chapters as c
-    ON sci.sci_id = c.sci_id
-    INNER JOIN public_chapters as pc 
-    on c.pc_id = pc.pc_id
-    INNER JOIN public_quizs as pq 
-    on pc.pc_id = pq.pc_id
+    FROM study_card_items AS sci
+    INNER JOIN chapters AS c
+      ON sci.sci_id = c.sci_id
+    INNER JOIN public_chapters As pc 
+      ON c.pc_id = pc.pc_id
+    INNER JOIN public_quizs AS pq 
+      ON pc.pc_id = pq.pc_id
     WHERE sci.user_id = ${user_id}
-    AND sci.sci_id = ${sci_id}
-    AND c.chapter_id = ${chapter_id}
+      AND sci.sci_id = ${sci_id}
+      AND c.chapter_id = ${chapter_id}
     LIMIT 1
     `;
     if (isAlreadyHaveQuizs.length !== 0) {
@@ -369,14 +370,14 @@ const createQuizs = async (
     SELECT 
       pc.pc_id,
       pc.transcript
-    FROM study_card_items as sci
-    INNER JOIN chapters as c
-    ON sci.sci_id = c.sci_id
-    INNER JOIN public_chapters as pc 
-    on c.pc_id = pc.pc_id
+    FROM study_card_items AS sci
+    INNER JOIN chapters AS c
+      ON sci.sci_id = c.sci_id
+    INNER JOIN public_chapters AS pc 
+      ON c.pc_id = pc.pc_id
     WHERE sci.user_id = ${user_id}
-    AND sci.sci_id = ${sci_id}
-    AND c.chapter_id = ${chapter_id}
+      AND sci.sci_id = ${sci_id}
+      AND c.chapter_id = ${chapter_id}
     LIMIT 1
     `) as { pc_id: number; transcript: string; pq_id: number }[];
 

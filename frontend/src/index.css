@@ -34,6 +34,8 @@
 
   --animate-from-bottom: fromBottom 0.3s ease-in-out forwards;
   --animate-to-bottom: toBottom 0.3s ease-in-out forwards;
+
+  --animate-highlight-el: highlight 1.3s ease-in-out 2;
 }
 
 :root {
@@ -224,5 +226,16 @@ body {
 
   100% {
     transform: translateY(100%);
+  }
+}
+
+@keyframes highlight {
+  0%,
+  100% {
+    background-color: transparent;
+  }
+  50% {
+    color: white;
+    background-color: var(--color-primary);
   }
 }

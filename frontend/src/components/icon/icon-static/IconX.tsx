@@ -2,7 +2,7 @@ import type { Icon } from "../../../types/icon";
 
 export function IconX({
   size = 24,
-  color = "#000",
+  color = "currentColor",
   strokeWidth = 4,
   ...props
 }: Icon) {

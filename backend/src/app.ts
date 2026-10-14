@@ -17,7 +17,7 @@ import authRoute from "./routes/auth-route.js";
 import oauthRoute from "./routes/oauth-route.js";
 import userRoute from "./routes/user-route.js";
 import studyCardRoute from "./routes/study-card/study-card-route.js";
-import chatChapterRoute from "./routes/study-card/chat-chapter-route.js";
+import chatChapterRoute from "./routes/study-card/chapter-route.js";
 
 // helper function
 import { getEnv } from "./utils/getEnv.js";

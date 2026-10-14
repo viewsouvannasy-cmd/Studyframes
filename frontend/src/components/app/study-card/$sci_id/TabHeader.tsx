@@ -17,12 +17,13 @@ import { useOnChapter } from "../../../../context/useOnChapter";
 interface TabHeaderProp {
   sci_id: string;
   section: string;
+  quizzs?: string;
 }
 
-export function TabHeader({ sci_id, section }: TabHeaderProp) {
+export function TabHeader({ sci_id, section, quizzs }: TabHeaderProp) {
   const navigate = useNavigate();
 
-  const { currentChapter } = useOnChapter();
+  const { currentChapter, setCurrentChapter } = useOnChapter();
 
   const [isOpenDropDown, setIsOpenDropDown] = useState(false);
 
@@ -39,9 +40,11 @@ export function TabHeader({ sci_id, section }: TabHeaderProp) {
   return (
     <div className="flex items-center justify-between border-b border-(--color-border-strong) p-1">
       <div className="flex items-center gap-2">
-        <Link
-          to="/app/study-card"
-          type="submit"
+        <button
+          onClick={() => {
+            navigate({ to: "/app/study-card" });
+            setCurrentChapter("chapter-1");
+          }}
           className="group relative flex size-9 cursor-pointer justify-center justify-self-end overflow-hidden rounded-full shadow"
         >
           <span className="absolute inset-0 bg-linear-to-b from-(--color-primary) to-(--color-primary-soft)" />
@@ -54,7 +57,7 @@ export function TabHeader({ sci_id, section }: TabHeaderProp) {
               size={25}
             />
           </span>
-        </Link>
+        </button>
 
         <Link
           to="/app/study-card/$sci_id/$section"
@@ -66,11 +69,12 @@ export function TabHeader({ sci_id, section }: TabHeaderProp) {
 
         <div className="relative flex h-9 items-center gap-0.5 rounded-full border border-(--color-border-strong)">
           <div
-            className={`z-10 flex h-full items-center gap-2 rounded-r-md transition-colors duration-200 ${section.split("-").includes("chapter") ? "bg-(--color-primary-soft) pr-2.5" : "px-1 has-[a:hover]:bg-(--color-border)"}`}
+            className={`z-10 flex h-full items-center gap-2 rounded-r-md transition-colors duration-200 ${section.split("-").includes("chapter") && !quizzs ? "bg-(--color-primary-soft) pr-2.5" : "px-1 has-[a:hover]:bg-(--color-border)"}`}
             style={{ borderTopLeftRadius: 17, borderBottomLeftRadius: 17 }}
           >
             <Link
               to="/app/study-card/$sci_id/$section"
+
               params={{ sci_id: sci_id, section: currentChapter }}
               className="text-small flex h-full items-center pl-3"
             >
@@ -92,20 +96,32 @@ export function TabHeader({ sci_id, section }: TabHeaderProp) {
           <span className="text-small z-10 text-(--color-text-secondary)">
             |
           </span>
-          <Link
-            to="/app/study-card/$sci_id/$section/$quizs"
-            params={{
-              sci_id: sci_id,
-              section: section === "overview" ? "chaprer-1" : section,
-              quizs: "quizs",
-            }}
-            style={{ borderTopRightRadius: 17, borderBottomRightRadius: 17 }}
-            className={`text-small z-10 flex h-full items-center rounded-l-md transition-colors duration-200 ${section === "quizs" ? "bg-(--color-primary-soft) px-3" : "px-1 pr-3 hover:bg-(--color-border)"}`}
-          >
-            {current?.total_quizs === 0
-              ? "No Quizs"
-              : `${!current?.total_quizs ? "" : current?.total_quizs} Quizs`}
-          </Link>
+          {!current?.is_generated ? (
+            <Link
+              from="/app/study-card/$sci_id/$section/"
+              params={{ sci_id: sci_id, section: "overview" }}
+              to="."
+              hashScrollIntoView={{ behavior: "smooth" }}
+              hash={`item-chapter-${current?.pc_number}`}
+              className="text-small z-10 flex h-full cursor-pointer items-center rounded-l-md rounded-r-[20px] px-3 transition-colors duration-200 hover:bg-(--color-border)"
+            >
+              Quiz
+            </Link>
+          ) : (
+            <Link
+              to="/app/study-card/$sci_id/$section/quizzs"
+              params={{
+                sci_id: sci_id,
+                section: currentChapter,
+              }}
+              style={{ borderTopRightRadius: 17, borderBottomRightRadius: 17 }}
+              className={`text-small z-10 flex h-full cursor-pointer items-center rounded-l-md transition-colors duration-200 ${quizzs ? "bg-(--color-primary-soft) px-3" : "px-1 pr-3 hover:bg-(--color-border)"}`}
+            >
+              {current?.total_quizs === 0
+                ? "No Quiz"
+                : `${!current?.total_quizs ? "" : current?.total_quizs} Quizzs`}
+            </Link>
+          )}
 
           {/* drop down */}
           <div
@@ -128,7 +144,9 @@ export function TabHeader({ sci_id, section }: TabHeaderProp) {
                   className="flex w-full cursor-pointer items-center justify-between rounded-md p-2 hover:bg-(--color-primary-soft)"
                 >
                   <p className="text-caption">Chapter-{item.pc_number}</p>
-                  <span className="text-caption">{item.total_quizs} Quizs</span>
+                  <span className="text-caption">
+                    {item.is_generated ? item.total_quizs : ""} Quizs
+                  </span>
                 </button>
               );
             })}

@@ -1,5 +1,6 @@
 // library
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useLocation } from "@tanstack/react-router";
+import { useEffect } from "react";
 
 // component
 import { IconPlus } from "../../../../icon/icon-static/IconPlus";
@@ -23,6 +24,11 @@ interface ItemChapter {
 export function ItemChapter({ sci_id, chapter, length }: ItemChapter) {
   const navigate = useNavigate();
 
+  // this use to highlight a button for let user create a quiz
+  const hash = useLocation({ select: (l) => l.hash });
+  const elId = `item-chapter-${chapter.pc_number}`;
+  const isHighLight = hash === elId;
+
   const { mutate, isPending } = useCreateQuizs();
 
   const handleCreateQuizs = (chapter_id: number) => {
@@ -32,8 +38,27 @@ export function ItemChapter({ sci_id, chapter, length }: ItemChapter) {
     });
   };
 
+  useEffect(() => {
+    if (!isHighLight) {
+      return;
+    }
+
+    const t = setTimeout(
+      () =>
+        navigate({
+          to: "/app/study-card/$sci_id/$section",
+          params: { sci_id: sci_id, section: "overview" },
+          resetScroll: false,
+        }),
+      2600,
+    );
+
+    return () => clearTimeout(t);
+  }, [isHighLight, navigate, sci_id]);
+
   return (
     <div
+      id={elId}
       role="button"
       onClick={() => {
         const section = `chapter-${chapter.pc_number}`;
@@ -64,12 +89,11 @@ export function ItemChapter({ sci_id, chapter, length }: ItemChapter) {
               e.stopPropagation();
               handleCreateQuizs(chapter.chapter_id);
             }}
-            className="group text-small flex cursor-pointer items-center gap-1 rounded-full border bg-(--color-background) px-2 py-1 text-(--color-primary) transition-colors duration-200 hover:bg-(--color-primary) hover:text-(--color-text-inverse)"
+            className={`group text-small flex cursor-pointer items-center gap-1 rounded-full border bg-(--color-background) px-2 py-1 text-(--color-primary) transition-colors duration-200 hover:bg-(--color-primary) hover:text-(--color-text-inverse) ${
+              isHighLight ? "animate-highlight-el" : ""
+            } `}
           >
-            <IconPlus
-              size={17}
-              className="text-(--color-primary) transition-colors duration-200 group-hover:text-(--color-text-inverse)"
-            />
+            <IconPlus size={17} />
             Gen
           </button>
         )}

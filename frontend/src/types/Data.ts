@@ -47,3 +47,13 @@ export interface ChatMessage {
   content: string;
   create_at: Date;
 }
+
+export interface Quizs {
+  pq_id: number;
+  question: string;
+  choice: string;
+  correct_answer: string;
+  qa_id: number;
+  answer: string;
+  is_correct: string;
+}
