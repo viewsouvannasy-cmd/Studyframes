@@ -113,34 +113,6 @@ const getStudyCardLesson = async (
   }
 };
 
-const createQuizs = async (
-  isRetry = false,
-  { sci_id, chapter_id }: { sci_id: number; chapter_id: number },
-): Promise<{ ok: boolean; msg: string }> => {
-  try {
-    const accessToken = getAccessToken();
-    const response = await axios.post(
-      `${getEnv("VITE_SERVER_HOST")}/api/study-card/create/quizs/${sci_id}/${chapter_id}`,
-      {},
-      { headers: { Authorization: `Bearer ${accessToken}` } },
-    );
-
-    return response.data;
-  } catch (error) {
-    if (
-      axios.isAxiosError<ResponseStatus>(error) &&
-      error.response &&
-      error.response.status !== 401
-    ) {
-      throw error;
-    }
-
-    return await handleAccessTokenError(error, isRetry, () =>
-      createQuizs(true, { sci_id, chapter_id }),
-    );
-  }
-};
-
 const renameStudyCard = async (
   isRetry = false,
   { sci_id, new_name }: { sci_id: number; new_name: string },
@@ -199,7 +171,6 @@ export {
   createStudyCardWithYouTube,
   getListStudyCard,
   getStudyCardLesson,
-  createQuizs,
   renameStudyCard,
   changeStudyCardColor,
   deleteStudyCard,

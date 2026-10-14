@@ -42,6 +42,7 @@ import { ALLOW_STUDY_CARD_COLOR } from "../../constants/color.js";
 // type
 import type { StudyCardLesson, Quizs } from "../../types/Data.js";
 import { read } from "node:fs";
+import { sign } from "node:crypto";
 
 // this function is use to check before createing card
 const checkCanCreateStudyCard = async (
@@ -362,7 +363,7 @@ const createQuizs = async (
         await writeUserGeneratedQuizs(chapter_id);
       }
       return res
-        .status(400)
+        .status(200)
         .json({ ok: false, msg: "the chapter is already have quizs" });
     }
 
