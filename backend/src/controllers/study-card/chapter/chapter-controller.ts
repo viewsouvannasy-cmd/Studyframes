@@ -3,8 +3,13 @@ import { Request, Response, NextFunction } from "express";
 import { sql } from "../../../config/database.js";
 
 // query
-import { wirteChapterChatMessage, readChapterChatMessage } from "./cc-query.js";
-import { deleteChatChapter } from "./cc-query.js";
+import {
+  wirteChapterChatMessage,
+  readChapterChatMessage,
+  deleteChatChapter,
+  readChapterQuiz,
+  writeUserAnswer,
+} from "./c-query.js";
 
 // helper function
 import { aiChatBot } from "../../../utils/connectAi.js";
@@ -119,4 +124,53 @@ const clearChatMessage = async (
   }
 };
 
-export { createMessage, getChatMessage, clearChatMessage };
+const getQuizChapter = async (
+  req: Request<{ chapter_id: number }, {}, { user_id: number }>,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { user_id } = req.body;
+    const { chapter_id } = req.params;
+
+    // get public quiz from a database
+    const results = await readChapterQuiz(chapter_id, user_id);
+
+    res.status(200).json({ ok: true, results });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const answerQuiz = async (
+  req: Request<
+    { sci_id: number; pq_id: number },
+    {},
+    { answer: string; is_correct: boolean }
+  >,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { answer, is_correct } = req.body;
+    const { sci_id, pq_id } = req.params;
+
+    if (!["A", "B", "C"].includes(answer)) {
+      return;
+    }
+
+    await writeUserAnswer(sci_id, pq_id, answer, is_correct);
+
+    res.status(200).json({ ok: true, msg: "create answer success" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export {
+  createMessage,
+  getChatMessage,
+  clearChatMessage,
+  getQuizChapter,
+  answerQuiz,
+};

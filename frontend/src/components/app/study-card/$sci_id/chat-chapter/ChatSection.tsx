@@ -24,9 +24,9 @@ import { SUGGESTION_MESSAGE } from "../../../../../constants/chat";
 import {
   useGetChatChapter,
   useSendMessage,
-} from "../../../../../api/study-card/chat-chapter/chat-chapter";
+} from "../../../../../api/study-card/chapter/chapter";
 import { useGetStudyCardLesson } from "../../../../../api/study-card/study-card";
-import { useClearChatChapter } from "../../../../../api/study-card/chat-chapter/chat-chapter";
+import { useClearChatChapter } from "../../../../../api/study-card/chapter/chapter";
 
 // key
 import { CHAT_CHAPTER_KEY } from "../../../../../constants/queryKey";

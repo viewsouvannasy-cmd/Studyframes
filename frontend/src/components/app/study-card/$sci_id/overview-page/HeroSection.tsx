@@ -12,8 +12,11 @@ export function HeroSection({ sci_id }: HeroSectionProp) {
   const { data, isLoading } = useGetStudyCardLesson(Number(sci_id));
 
   const totalQuizsInCard = data?.reduce((acc, item) => {
-    const number = !item.total_quizs ? 0 : item.total_quizs;
-    return acc + number;
+    if (item.is_generated) {
+      const number = !item.total_quizs ? 0 : item.total_quizs;
+      return acc + number;
+    }
+    return 0;
   }, 0);
 
   return (
@@ -45,7 +48,7 @@ export function HeroSection({ sci_id }: HeroSectionProp) {
             <div className="flex-1 border-l border-(--color-border-strong) pl-4">
               <p className="font-medium">{totalQuizsInCard}</p>
               <span className="text-small text-(--color-text-secondary)">
-                Quizs
+                Quizzs
               </span>
             </div>
           </div>

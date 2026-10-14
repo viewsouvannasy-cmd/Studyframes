@@ -8,10 +8,15 @@ import {
   getChatChapter,
   sendMessage,
   clearChatChapter,
-} from "./chat-chapter-func";
+  getChapterQuizzs,
+  answerQuiz,
+} from "./chapter-func";
 
 // key
-import { CHAT_CHAPTER_KEY } from "../../../constants/queryKey";
+import {
+  CHAT_CHAPTER_KEY,
+  QUIZ_CHAPTER_KEY,
+} from "../../../constants/queryKey";
 
 // type
 import type { AxiosError } from "axios";
@@ -45,6 +50,38 @@ export const useClearChatChapter = () => {
     onSuccess: (_data, variable) => {
       queryClient.invalidateQueries({
         queryKey: [...CHAT_CHAPTER_KEY, variable.chapter_id],
+      });
+    },
+  });
+};
+
+// ----------------
+// quiz zone
+// ----------------
+
+export const useGetQuizs = (chapter_id: number | undefined) => {
+  return useQuery({
+    queryKey: [...QUIZ_CHAPTER_KEY, chapter_id],
+    queryFn: () => getChapterQuizzs(false, { chapter_id }),
+    enabled: !!chapter_id,
+  });
+};
+
+export const useAnswerQuiz = (chapter_id: number | undefined) => {
+  return useMutation<
+    void,
+    void,
+    {
+      sci_id: number;
+      pq_id: number;
+      answer: "A" | "B" | "C";
+      is_correct: boolean;
+    }
+  >({
+    mutationFn: (variable) => answerQuiz(false, variable),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [...QUIZ_CHAPTER_KEY, chapter_id],
       });
     },
   });

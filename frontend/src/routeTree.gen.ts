@@ -18,7 +18,7 @@ import { Route as AppRecommendRouteImport } from './routes/app/recommend'
 import { Route as AppStudyCardIndexRouteImport } from './routes/app/study-card/index'
 import { Route as AppStudyCardLoadingRouteImport } from './routes/app/study-card/loading'
 import { Route as AppStudyCardSci_idSectionIndexRouteImport } from './routes/app/study-card/$sci_id/$section/index'
-import { Route as AppStudyCardSci_idSectionQuizsIndexRouteImport } from './routes/app/study-card/$sci_id/$section/$quizs/index'
+import { Route as AppStudyCardSci_idSectionQuizzsIndexRouteImport } from './routes/app/study-card/$sci_id/$section/quizzs/index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -66,10 +66,10 @@ const AppStudyCardSci_idSectionIndexRoute =
     path: '/app/study-card/$sci_id/$section/',
     getParentRoute: () => rootRouteImport,
   } as any)
-const AppStudyCardSci_idSectionQuizsIndexRoute =
-  AppStudyCardSci_idSectionQuizsIndexRouteImport.update({
-    id: '/app/study-card/$sci_id/$section/$quizs/',
-    path: '/app/study-card/$sci_id/$section/$quizs/',
+const AppStudyCardSci_idSectionQuizzsIndexRoute =
+  AppStudyCardSci_idSectionQuizzsIndexRouteImport.update({
+    id: '/app/study-card/$sci_id/$section/quizzs/',
+    path: '/app/study-card/$sci_id/$section/quizzs/',
     getParentRoute: () => rootRouteImport,
   } as any)
 
@@ -83,7 +83,7 @@ export interface FileRoutesByFullPath {
   '/app/study-card/loading': typeof AppStudyCardLoadingRoute
   '/app/study-card/': typeof AppStudyCardIndexRoute
   '/app/study-card/$sci_id/$section/': typeof AppStudyCardSci_idSectionIndexRoute
-  '/app/study-card/$sci_id/$section/$quizs/': typeof AppStudyCardSci_idSectionQuizsIndexRoute
+  '/app/study-card/$sci_id/$section/quizzs/': typeof AppStudyCardSci_idSectionQuizzsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -95,7 +95,7 @@ export interface FileRoutesByTo {
   '/app/study-card/loading': typeof AppStudyCardLoadingRoute
   '/app/study-card': typeof AppStudyCardIndexRoute
   '/app/study-card/$sci_id/$section': typeof AppStudyCardSci_idSectionIndexRoute
-  '/app/study-card/$sci_id/$section/$quizs': typeof AppStudyCardSci_idSectionQuizsIndexRoute
+  '/app/study-card/$sci_id/$section/quizzs': typeof AppStudyCardSci_idSectionQuizzsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -108,7 +108,7 @@ export interface FileRoutesById {
   '/app/study-card/loading': typeof AppStudyCardLoadingRoute
   '/app/study-card/': typeof AppStudyCardIndexRoute
   '/app/study-card/$sci_id/$section/': typeof AppStudyCardSci_idSectionIndexRoute
-  '/app/study-card/$sci_id/$section/$quizs/': typeof AppStudyCardSci_idSectionQuizsIndexRoute
+  '/app/study-card/$sci_id/$section/quizzs/': typeof AppStudyCardSci_idSectionQuizzsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -122,7 +122,7 @@ export interface FileRouteTypes {
     | '/app/study-card/loading'
     | '/app/study-card/'
     | '/app/study-card/$sci_id/$section/'
-    | '/app/study-card/$sci_id/$section/$quizs/'
+    | '/app/study-card/$sci_id/$section/quizzs/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -134,7 +134,7 @@ export interface FileRouteTypes {
     | '/app/study-card/loading'
     | '/app/study-card'
     | '/app/study-card/$sci_id/$section'
-    | '/app/study-card/$sci_id/$section/$quizs'
+    | '/app/study-card/$sci_id/$section/quizzs'
   id:
     | '__root__'
     | '/'
@@ -146,7 +146,7 @@ export interface FileRouteTypes {
     | '/app/study-card/loading'
     | '/app/study-card/'
     | '/app/study-card/$sci_id/$section/'
-    | '/app/study-card/$sci_id/$section/$quizs/'
+    | '/app/study-card/$sci_id/$section/quizzs/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -159,7 +159,7 @@ export interface RootRouteChildren {
   AppStudyCardLoadingRoute: typeof AppStudyCardLoadingRoute
   AppStudyCardIndexRoute: typeof AppStudyCardIndexRoute
   AppStudyCardSci_idSectionIndexRoute: typeof AppStudyCardSci_idSectionIndexRoute
-  AppStudyCardSci_idSectionQuizsIndexRoute: typeof AppStudyCardSci_idSectionQuizsIndexRoute
+  AppStudyCardSci_idSectionQuizzsIndexRoute: typeof AppStudyCardSci_idSectionQuizzsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -227,11 +227,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppStudyCardSci_idSectionIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/app/study-card/$sci_id/$section/$quizs/': {
-      id: '/app/study-card/$sci_id/$section/$quizs/'
-      path: '/app/study-card/$sci_id/$section/$quizs'
-      fullPath: '/app/study-card/$sci_id/$section/$quizs/'
-      preLoaderRoute: typeof AppStudyCardSci_idSectionQuizsIndexRouteImport
+    '/app/study-card/$sci_id/$section/quizzs/': {
+      id: '/app/study-card/$sci_id/$section/quizzs/'
+      path: '/app/study-card/$sci_id/$section/quizzs'
+      fullPath: '/app/study-card/$sci_id/$section/quizzs/'
+      preLoaderRoute: typeof AppStudyCardSci_idSectionQuizzsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -247,8 +247,8 @@ const rootRouteChildren: RootRouteChildren = {
   AppStudyCardLoadingRoute: AppStudyCardLoadingRoute,
   AppStudyCardIndexRoute: AppStudyCardIndexRoute,
   AppStudyCardSci_idSectionIndexRoute: AppStudyCardSci_idSectionIndexRoute,
-  AppStudyCardSci_idSectionQuizsIndexRoute:
-    AppStudyCardSci_idSectionQuizsIndexRoute,
+  AppStudyCardSci_idSectionQuizzsIndexRoute:
+    AppStudyCardSci_idSectionQuizzsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
