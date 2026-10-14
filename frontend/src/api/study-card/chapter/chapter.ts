@@ -2,20 +2,20 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 
 import { queryClient } from "../../../config/queryClient";
 
-// key
-
 import {
   getChatChapter,
   sendMessage,
   clearChatChapter,
   getChapterQuizzs,
   answerQuiz,
+  createQuizs,
 } from "./chapter-func";
 
 // key
 import {
   CHAT_CHAPTER_KEY,
   QUIZ_CHAPTER_KEY,
+  STUDY_CARD_LESSON_KEY,
 } from "../../../constants/queryKey";
 
 // type
@@ -58,6 +58,21 @@ export const useClearChatChapter = () => {
 // ----------------
 // quiz zone
 // ----------------
+
+export const useCreateQuizs = () => {
+  return useMutation<
+    { ok: boolean; msg: string },
+    AxiosError<ResponseStatus>,
+    { sci_id: number; chapter_id: number }
+  >({
+    mutationFn: (variable) => createQuizs(false, variable),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: STUDY_CARD_LESSON_KEY,
+      });
+    },
+  });
+};
 
 export const useGetQuizs = (chapter_id: number | undefined) => {
   return useQuery({

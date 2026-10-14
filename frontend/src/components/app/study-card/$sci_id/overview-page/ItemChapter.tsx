@@ -10,7 +10,7 @@ import { SipnnerLoad } from "../../../../loading-state/SipnnerLoad";
 import { formatDuration } from "../../../../../utils/calculate";
 
 // api
-import { useCreateQuizs } from "../../../../../api/study-card/study-card";
+import { useCreateQuizs } from "../../../../../api/study-card/chapter/chapter";
 
 // type
 import type { StudyCardLesson } from "../../../../../types/Data";

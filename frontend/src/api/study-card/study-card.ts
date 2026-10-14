@@ -7,7 +7,6 @@ import {
   createStudyCardWithYouTube,
   getListStudyCard,
   getStudyCardLesson,
-  createQuizs,
   renameStudyCard,
   changeStudyCardColor,
   deleteStudyCard,
@@ -83,18 +82,5 @@ export const useGetStudyCardLesson = (sci_id: number) => {
     queryFn: () => getStudyCardLesson(false, { sci_id }),
     enabled: !!sci_id,
     gcTime: 0,
-  });
-};
-
-export const useCreateQuizs = () => {
-  return useMutation<
-    { ok: boolean; msg: string },
-    AxiosError<ResponseStatus>,
-    { sci_id: number; chapter_id: number }
-  >({
-    mutationFn: (variable) => createQuizs(false, variable),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: STUDY_CARD_LESSON_KEY });
-    },
   });
 };

@@ -5,6 +5,7 @@ import { handleAccessTokenError } from "../../../utils/handleError";
 
 // type
 import type { ChatMessage, Quizs } from "../../../types/Data";
+import type { ResponseStatus } from "../../../types/auth-type";
 
 export const getChatChapter = async (
   isRetry = false,
@@ -56,6 +57,37 @@ export const clearChatChapter = async (
   } catch (error) {
     return await handleAccessTokenError(error, isRetry, () =>
       clearChatChapter(true, { chapter_id }),
+    );
+  }
+};
+
+////
+
+export const createQuizs = async (
+  isRetry = false,
+  { sci_id, chapter_id }: { sci_id: number; chapter_id: number },
+): Promise<{ ok: boolean; msg: string }> => {
+  try {
+    const accessToken = getAccessToken();
+    const response = await axios.post(
+      `${getEnv("VITE_SERVER_HOST")}/api/study-card/create/quizs/${sci_id}/${chapter_id}`,
+      {},
+      { headers: { Authorization: `Bearer ${accessToken}` } },
+    );
+
+    return response.data;
+  } catch (error) {
+    if (
+      axios.isAxiosError<ResponseStatus>(error) &&
+      error.response &&
+      error.response.status !== 401
+    ) {
+      // console.log(error.response.data);
+      throw error;
+    }
+
+    return await handleAccessTokenError(error, isRetry, () =>
+      createQuizs(true, { sci_id, chapter_id }),
     );
   }
 };
